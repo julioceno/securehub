@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: auth
+  datasource:
+    url: jdbc:postgresql://localhost:5432/auth
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+logging:
+  level:
+    root: INFO
+    com.securehub.auth: DEBUG
