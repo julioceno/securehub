@@ -5,8 +5,7 @@ import com.securehub.auth.application.mapper.UserMapper;
 import com.securehub.auth.application.port.out.PasswordHasher;
 import com.securehub.auth.domain.user.User;
 import com.securehub.auth.domain.user.UserDTO;
-import com.securehub.auth.domain.user.UserRepository;
-import com.securehub.auth.domain.user.UserToCreateDTO;
+import com.securehub.auth.domain.user.UserRepositoryPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +21,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class CreateUserServiceImplTest {
     @Mock
-    private UserRepository userRepository;
+    private UserRepositoryPort userRepository;
 
     @Mock
     private UserMapper userMapper;

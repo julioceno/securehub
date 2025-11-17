@@ -6,14 +6,16 @@ public class User {
     private String username;
     private String email;
     private String password;
+    private Boolean enabled;
 
     public User() {}
 
-    public User(String id, String username, String email, String password) {
+    public User(String id, String username, String email, String password, Boolean enabled) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
+        this.enabled = enabled;
     }
 
     public String getId() {
@@ -46,5 +48,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 }

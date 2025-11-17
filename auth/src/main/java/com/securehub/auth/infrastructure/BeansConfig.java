@@ -5,7 +5,7 @@ import com.securehub.auth.application.port.out.PasswordHasher;
 import com.securehub.auth.application.service.user.CreateUserServiceImpl;
 import com.securehub.auth.application.service.user.UserServiceImpl;
 import com.securehub.auth.application.usecases.user.UserUseCases;
-import com.securehub.auth.domain.user.UserRepository;
+import com.securehub.auth.domain.user.UserRepositoryPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,7 +18,7 @@ public class BeansConfig {
     }
 
     @Bean
-    public CreateUserServiceImpl createUserService(UserRepository userRepository, UserMapper userMapper, PasswordHasher passwordHasher) {
+    public CreateUserServiceImpl createUserService(UserRepositoryPort userRepository, UserMapper userMapper, PasswordHasher passwordHasher) {
         return new CreateUserServiceImpl(userRepository, userMapper, passwordHasher);
     }
 }

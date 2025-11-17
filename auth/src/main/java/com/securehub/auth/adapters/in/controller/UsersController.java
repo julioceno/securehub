@@ -24,7 +24,13 @@ public class UsersController {
     public ResponseEntity<UserDTO> createUser(
            @Valid @RequestBody UserToCreateDTO body
     ) {
-        User user = new User(null,  body.getUsername(), body.getEmail(), body.getPassword());
+        User user = new User(
+                null,
+                body.getUsername(),
+                body.getEmail(),
+                body.getPassword(),
+                false
+        );
         UserDTO userDTO = userUseCases.createUser(user);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

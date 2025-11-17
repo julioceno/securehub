@@ -1,4 +1,4 @@
-package com.securehub.auth.infrastructure.config;
+package com.securehub.auth.infrastructure.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
-// TODO: talvez faça sentido essa classe estar em infrastructure.security
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {

@@ -7,7 +7,7 @@ import com.securehub.auth.application.usecases.user.CreateUserUseCases;
 import com.securehub.auth.application.util.CorrelationId;
 import com.securehub.auth.domain.user.User;
 import com.securehub.auth.domain.user.UserDTO;
-import com.securehub.auth.domain.user.UserRepository;
+import com.securehub.auth.domain.user.UserRepositoryPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,11 +16,11 @@ import java.util.Optional;
 public class CreateUserServiceImpl implements CreateUserUseCases {
     private static final Logger log = LoggerFactory.getLogger(CreateUserServiceImpl.class);
 
-    private final UserRepository userRepository;
+    private final UserRepositoryPort userRepository;
     private final UserMapper userMapper;
     private final PasswordHasher passwordHasher;
 
-    public CreateUserServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordHasher passwordHasher) {
+    public CreateUserServiceImpl(UserRepositoryPort userRepository, UserMapper userMapper, PasswordHasher passwordHasher) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordHasher = passwordHasher;
