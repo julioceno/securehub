@@ -3,6 +3,7 @@ package com.securehub.auth.adapters.in.filter;
 import com.securehub.auth.infrastructure.security.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,9 +15,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    private static final String tokenCookieName = "token";
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
 
@@ -43,11 +47,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    // TODO: get token from the cookie
     private String getToken(HttpServletRequest request) {
-        String tokenHeader = request.getHeader("Authorization");
-        if (!StringUtils.hasText(tokenHeader)) return null;
+        if (request.getCookies() == null) {
+            return null;
+        };
 
-        return tokenHeader.replace("Bearer ", "");
+        Optional<Cookie> token = Arrays.stream(request.getCookies())
+                .filter(item -> tokenCookieName.equals(item.getName()))
+                .findFirst();
+
+        return token.map(Cookie::getValue).orElse(null);
     }
 }
