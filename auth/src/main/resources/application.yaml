@@ -6,6 +6,11 @@ spring:
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
+
+jwt:
+  secret: secret
+  expirationInSeconds: 3600
+
 logging:
   level:
     root: INFO

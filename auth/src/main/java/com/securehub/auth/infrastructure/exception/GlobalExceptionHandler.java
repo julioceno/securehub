@@ -3,6 +3,7 @@ package com.securehub.auth.infrastructure.exception;
 
 import com.securehub.auth.application.exception.BadRequestException;
 import com.securehub.auth.application.exception.ErrorResponse;
+import com.securehub.auth.application.exception.UnauthorizedException;
 import com.securehub.auth.application.util.CorrelationId;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -53,6 +54,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleException(UnauthorizedException ex, HttpServletRequest request) {
+        String correlationId = CorrelationId.get().orElse(null);
+        ErrorResponse body = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Unauthorized",
+                ex.getMessage(),
+                request.getRequestURI(),
+                correlationId
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleAll(Exception ex, HttpServletRequest request) {
         String correlationId = CorrelationId.get().orElse(null);
@@ -64,8 +80,6 @@ public class GlobalExceptionHandler {
                 request.getRequestURI(),
                 correlationId
         );
-
-        ex.printStackTrace();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     };

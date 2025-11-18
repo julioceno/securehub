@@ -1,5 +1,6 @@
 package com.securehub.auth.application.service.user;
 
+import com.securehub.auth.application.usecases.user.CreateUserUseCases;
 import com.securehub.auth.application.usecases.user.UserUseCases;
 import com.securehub.auth.domain.user.User;
 import com.securehub.auth.domain.user.UserDTO;
@@ -7,9 +8,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserUseCases {
-    private final CreateUserServiceImpl createUserService;
+    private final CreateUserUseCases createUserService;
 
-    public UserServiceImpl(CreateUserServiceImpl createUserService) {
+    public UserServiceImpl(CreateUserUseCases createUserService) {
         this.createUserService = createUserService;
     }
 
