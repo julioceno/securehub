@@ -1,4 +1,4 @@
-package com.securehub.auth.adapters.out.repositories;
+package com.securehub.auth.adapters.out.repositories.user;
 
 import com.securehub.auth.adapters.out.entities.JpaUserEntity;
 import com.securehub.auth.domain.user.User;
@@ -23,19 +23,9 @@ public class UserRepositoryImpl implements UserRepositoryPort {
     }
 
     @Override
-    public User findById(String id) {
-        return null;
-    }
-
-    @Override
     public Optional<User> findByEmail(String email) {
         return jpaUserRepository.findByEmail(email)
                 .map(this::toDomain);
-    }
-
-    @Override
-    public void deleteById(String id) {
-
     }
 
     private User toDomain(JpaUserEntity jpaUserEntity) {
