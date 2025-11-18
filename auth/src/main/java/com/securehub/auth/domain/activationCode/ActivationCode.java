@@ -1,18 +1,19 @@
 package com.securehub.auth.domain.activationCode;
 
+import java.time.Instant;
 import java.util.Date;
 
 public class ActivationCode {
     private String id;
     private String userId;
     private String code;
-    private Date expiresAt;
-    private Date confirmedAt;
+    private Instant expiresAt;
+    private Instant confirmedAt;
 
     public ActivationCode() {
     }
 
-    public ActivationCode(String id, String userId, String code, Date expiresAt, Date confirmedAt) {
+    public ActivationCode(String id, String userId, String code, Instant expiresAt, Instant confirmedAt) {
         this.id = id;
         this.userId = userId;
         this.code = code;
@@ -44,19 +45,19 @@ public class ActivationCode {
         this.code = code;
     }
 
-    public Date getExpiresAt() {
+    public Instant getExpiresAt() {
         return expiresAt;
     }
 
-    public void setExpiresAt(Date expiresAt) {
+    public void setExpiresAt(Instant expiresAt) {
         this.expiresAt = expiresAt;
     }
 
-    public Date getConfirmedAt() {
+    public Instant getConfirmedAt() {
         return confirmedAt;
     }
 
-    public void setConfirmedAt(Date confirmedAt) {
+    public void setConfirmedAt(Instant confirmedAt) {
         this.confirmedAt = confirmedAt;
     }
 }

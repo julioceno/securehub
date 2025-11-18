@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.Instant;
 
 @Entity
 @Table(name = "activation_codes")
@@ -22,10 +22,10 @@ public class JpaActivationCodeEntity {
     private String code;
 
     @Column(name = "expires_at")
-    private Date expiresAt;
+    private Instant expiresAt;
 
     @Column(name = "confirmed_at")
-    private Date confirmedAt;
+    private Instant confirmedAt;
 
     public JpaActivationCodeEntity(ActivationCode activationCode) {
         this.id = activationCode.getId();

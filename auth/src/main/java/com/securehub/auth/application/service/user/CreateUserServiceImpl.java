@@ -15,7 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.SecureRandom;
-import java.util.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 public class CreateUserServiceImpl implements CreateUserUseCases {
@@ -67,11 +68,12 @@ public class CreateUserServiceImpl implements CreateUserUseCases {
         SecureRandom random = new SecureRandom();
         int code = 100000 + random.nextInt(900000);
 
+        Instant expiresAt = Instant.now().plus(15, ChronoUnit.MINUTES);
         ActivationCode activationCode = new ActivationCode(
                 null,
                 userCreated.getId(),
                 String.valueOf(code),
-                new Date(),
+                expiresAt,
                 null
         );
 
