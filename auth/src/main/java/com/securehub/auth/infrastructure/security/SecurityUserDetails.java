@@ -46,6 +46,6 @@ public class SecurityUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true; // TODO: implement logic when the user is disable
+        return user.getEnabled();
     }
 }
