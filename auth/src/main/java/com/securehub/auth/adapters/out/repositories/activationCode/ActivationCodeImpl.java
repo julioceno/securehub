@@ -34,6 +34,12 @@ public class ActivationCodeImpl implements ActivationCodeRepositoryPort {
                 .map(this::toDomain);
     }
 
+    @Override
+    public Optional<ActivationCode> findByUserIdAndCodeAndConfirmedAtIsNull(String userId, String code) {
+        return activationCodeRepository.findByUserIdAndCodeAndConfirmedAtIsNull(userId, code)
+                .map(this::toDomain);
+    }
+
     private ActivationCode toDomain(JpaActivationCodeEntity entity) {
         return new ActivationCode(
             entity.getId(),

@@ -14,6 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserToCreateDTO {
+
     @NotBlank(message = "{validation.required}")
     private String username;
 

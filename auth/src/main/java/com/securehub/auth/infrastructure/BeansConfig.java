@@ -4,9 +4,11 @@ import com.securehub.auth.application.mapper.UserMapper;
 import com.securehub.auth.application.port.out.PasswordHasher;
 import com.securehub.auth.application.port.out.TokenProviderPort;
 import com.securehub.auth.application.service.auth.AuthenticateUserService;
+import com.securehub.auth.application.service.user.ActivateUserServiceImpl;
 import com.securehub.auth.application.service.user.CreateUserServiceImpl;
 import com.securehub.auth.application.service.user.UserServiceImpl;
 import com.securehub.auth.application.usecases.auth.AuthenticateUserUseCase;
+import com.securehub.auth.application.usecases.user.ActivateUserUseCase;
 import com.securehub.auth.application.usecases.user.CreateUserUseCases;
 import com.securehub.auth.application.usecases.user.UserUseCases;
 import com.securehub.auth.domain.activationCode.ActivationCodeRepositoryPort;
@@ -18,8 +20,8 @@ import org.springframework.context.annotation.Configuration;
 public class BeansConfig {
 
     @Bean
-    public UserUseCases userUseCases(CreateUserUseCases createUserService) {
-        return new UserServiceImpl(createUserService);
+    public UserUseCases userUseCases(CreateUserUseCases createUserService, ActivateUserUseCase activateUserUseCase) {
+        return new UserServiceImpl(createUserService, activateUserUseCase);
     }
 
     @Bean
@@ -34,5 +36,10 @@ public class BeansConfig {
             TokenProviderPort tokenProviderPort
     ) {
         return new AuthenticateUserService(userRepository, passwordHasher, tokenProviderPort);
+    }
+
+    @Bean
+    public ActivateUserUseCase activateUserUseCase(UserRepositoryPort userRepositoryPort, ActivationCodeRepositoryPort activationCodeRepositoryPort, UserMapper userMapper) {
+        return new ActivateUserServiceImpl(userRepositoryPort, activationCodeRepositoryPort, userMapper);
     }
 }

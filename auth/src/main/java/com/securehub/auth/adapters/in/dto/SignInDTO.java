@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record SignInDTO(
+        @NotBlank(message = "{validation.required}")
         @Email(message = "{validation.invalid}")
         String email,
 

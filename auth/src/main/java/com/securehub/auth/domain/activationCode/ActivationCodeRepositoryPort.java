@@ -9,4 +9,6 @@ public interface ActivationCodeRepositoryPort {
     Optional<ActivationCode> findByCode(String code);
 
     Optional<ActivationCode> findByUserId(String userId);
+
+    Optional<ActivationCode> findByUserIdAndCodeAndConfirmedAtIsNull(String userId, String code);
 }

@@ -7,7 +7,5 @@ public interface UserUseCases {
 
     public UserDTO createUser(User user);
 
-    public UserDTO findById(String id);
-
-    public void deleteById(String id);
+    public UserDTO enableUser(String email, String code);
 }

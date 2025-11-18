@@ -37,7 +37,7 @@ public class CreateUserServiceImpl implements CreateUserUseCases {
     @Override
     @Transactional
     public UserDTO run(User user) {
-        String correlationId = CorrelationId.get().orElse(null);
+        String correlationId = CorrelationId.get();
         log.info("UserServiceImpl.run - start - correlationId [{}] - email [{}]", correlationId, user.getEmail());
         validateUserDoesNotExist(correlationId, user.getEmail());
 
@@ -61,7 +61,7 @@ public class CreateUserServiceImpl implements CreateUserUseCases {
     }
 
     private void createActivationCode(User userCreated) {
-        String correlationId = CorrelationId.get().orElse(null);
+        String correlationId = CorrelationId.get();
         log.debug("UserServiceImpl.createActivationCode - start - correlationId [{}] - userId [{}] - email [{}]",
                 correlationId, userCreated.getId(), userCreated.getEmail());
 

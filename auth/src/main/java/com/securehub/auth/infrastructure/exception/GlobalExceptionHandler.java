@@ -3,6 +3,7 @@ package com.securehub.auth.infrastructure.exception;
 
 import com.securehub.auth.application.exception.BadRequestException;
 import com.securehub.auth.application.exception.ErrorResponse;
+import com.securehub.auth.application.exception.NotFoundException;
 import com.securehub.auth.application.exception.UnauthorizedException;
 import com.securehub.auth.application.util.CorrelationId;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +21,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleBadRequest(BadRequestException ex, HttpServletRequest request) {
-        String correlationId = CorrelationId.get().orElse(null);
+        String correlationId = CorrelationId.get();
 
         ErrorResponse body = new ErrorResponse(
                 LocalDateTime.now(),
@@ -36,7 +37,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleException(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        String correlationId = CorrelationId.get().orElse(null);
+        String correlationId = CorrelationId.get();
 
         String messages = ex.getBindingResult().getFieldErrors().stream()
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
@@ -56,7 +57,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> handleException(UnauthorizedException ex, HttpServletRequest request) {
-        String correlationId = CorrelationId.get().orElse(null);
+        String correlationId = CorrelationId.get();
         ErrorResponse body = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
@@ -69,9 +70,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleException(NotFoundException ex, HttpServletRequest request) {
+        String correlationId = CorrelationId.get();
+        ErrorResponse body = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "Not Found",
+                ex.getMessage(),
+                request.getRequestURI(),
+                correlationId
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleAll(Exception ex, HttpServletRequest request) {
-        String correlationId = CorrelationId.get().orElse(null);
+        String correlationId = CorrelationId.get();
         ErrorResponse body = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),

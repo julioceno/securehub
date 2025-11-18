@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/v1/ping").permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/v1/users/enable").permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/auth").permitAll()
                         .anyRequest().authenticated()
                 );

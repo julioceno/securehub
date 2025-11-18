@@ -1,5 +1,6 @@
 package com.securehub.auth.application.service.user;
 
+import com.securehub.auth.application.usecases.user.ActivateUserUseCase;
 import com.securehub.auth.application.usecases.user.CreateUserUseCases;
 import com.securehub.auth.application.usecases.user.UserUseCases;
 import com.securehub.auth.domain.user.User;
@@ -8,24 +9,21 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserUseCases {
-    private final CreateUserUseCases createUserService;
+    private final CreateUserUseCases createUserUseCase;
+    private final ActivateUserUseCase activateUserUseCase;
 
-    public UserServiceImpl(CreateUserUseCases createUserService) {
-        this.createUserService = createUserService;
+    public UserServiceImpl(CreateUserUseCases createUserUseCase, ActivateUserUseCase activateUserUseCase) {
+        this.createUserUseCase = createUserUseCase;
+        this.activateUserUseCase = activateUserUseCase;
     }
 
     @Override
     public UserDTO createUser(User user) {
-        return createUserService.run(user);
+        return createUserUseCase.run(user);
     }
 
     @Override
-    public UserDTO findById(String id) {
-        return null;
-    }
-
-    @Override
-    public void deleteById(String id) {
-
+    public UserDTO enableUser(String email, String code) {
+        return activateUserUseCase.run(email, code);
     }
 }

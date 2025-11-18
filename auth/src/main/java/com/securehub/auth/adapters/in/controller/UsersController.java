@@ -1,5 +1,6 @@
 package com.securehub.auth.adapters.in.controller;
 
+import com.securehub.auth.adapters.in.dto.EnableUserDTO;
 import com.securehub.auth.adapters.in.dto.UserToCreateDTO;
 import com.securehub.auth.domain.user.User;
 import jakarta.validation.Valid;
@@ -40,4 +41,14 @@ public class UsersController {
 
         return ResponseEntity.created(location).body(userDTO);
     }
+
+
+    @PostMapping("/enable")
+    public ResponseEntity<UserDTO> createActiveUser(
+            @Valid @RequestBody EnableUserDTO body
+    ) {
+        userUseCases.enableUser(body.email(), body.code());
+        return ResponseEntity.noContent().build();
+    }
+
 }
