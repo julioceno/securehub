@@ -22,17 +22,6 @@ public class ActivationCodeImpl implements ActivationCodeRepositoryPort {
         return toDomain(activationCodeEntity);
     }
 
-    @Override
-    public Optional<ActivationCode> findByCode(String code) {
-        return activationCodeRepository.findByCode(code)
-                .map(this::toDomain);
-    }
-
-    @Override
-    public Optional<ActivationCode> findByUserId(String userId) {
-        return activationCodeRepository.findByUserId(userId)
-                .map(this::toDomain);
-    }
 
     @Override
     public Optional<ActivationCode> findByUserIdAndCodeAndConfirmedAtIsNull(String userId, String code) {

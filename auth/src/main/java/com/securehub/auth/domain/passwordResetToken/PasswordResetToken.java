@@ -1,21 +1,21 @@
-package com.securehub.auth.domain.activationCode;
+package com.securehub.auth.domain.passwordResetToken;
 
 import java.time.Instant;
 
-public class ActivationCode {
+public class PasswordResetToken {
     private String id;
     private String userId;
-    private String code;
+    private String token;
     private Instant expiresAt;
     private Instant confirmedAt;
 
-    public ActivationCode() {
+    public PasswordResetToken() {
     }
 
-    public ActivationCode(String id, String userId, String code, Instant expiresAt, Instant confirmedAt) {
+    public PasswordResetToken(String id, String userId, String token, Instant expiresAt, Instant confirmedAt) {
         this.id = id;
         this.userId = userId;
-        this.code = code;
+        this.token = token;
         this.expiresAt = expiresAt;
         this.confirmedAt = confirmedAt;
     }
@@ -36,12 +36,12 @@ public class ActivationCode {
         this.userId = userId;
     }
 
-    public String getCode() {
-        return code;
+    public String getToken() {
+        return token;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public Instant getExpiresAt() {
