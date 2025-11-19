@@ -10,4 +10,6 @@ public interface UserUseCases {
     void enableUser(String email, String code);
 
     void forgotPassword(String email);
+
+    void resetPassword(String userId, String token, String password);
 }

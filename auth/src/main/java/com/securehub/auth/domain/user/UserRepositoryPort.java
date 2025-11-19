@@ -7,4 +7,6 @@ public interface UserRepositoryPort {
     User save (User user);
 
     Optional<User> findByEmail (String email);
+
+    Optional<User> findById (String email);
 }

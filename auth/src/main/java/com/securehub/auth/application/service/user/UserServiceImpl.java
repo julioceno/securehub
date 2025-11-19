@@ -1,9 +1,6 @@
 package com.securehub.auth.application.service.user;
 
-import com.securehub.auth.application.usecases.user.ActivateUserUseCase;
-import com.securehub.auth.application.usecases.user.CreateUserUseCases;
-import com.securehub.auth.application.usecases.user.ForgotPasswordUseCase;
-import com.securehub.auth.application.usecases.user.UserUseCases;
+import com.securehub.auth.application.usecases.user.*;
 import com.securehub.auth.domain.user.User;
 import com.securehub.auth.domain.user.UserDTO;
 import org.springframework.stereotype.Service;
@@ -13,11 +10,18 @@ public class UserServiceImpl implements UserUseCases {
     private final CreateUserUseCases createUserUseCase;
     private final ActivateUserUseCase activateUserUseCase;
     private final ForgotPasswordUseCase forgotPasswordUseCase;
+    private final ResetPasswordUseCase resetPasswordUseCase;
 
-    public UserServiceImpl(CreateUserUseCases createUserUseCase, ActivateUserUseCase activateUserUseCase, ForgotPasswordUseCase forgotPasswordUseCase) {
+    public UserServiceImpl(
+            CreateUserUseCases createUserUseCase,
+            ActivateUserUseCase activateUserUseCase,
+            ForgotPasswordUseCase forgotPasswordUseCase,
+            ResetPasswordUseCase resetPasswordUseCase
+    ) {
         this.createUserUseCase = createUserUseCase;
         this.activateUserUseCase = activateUserUseCase;
         this.forgotPasswordUseCase = forgotPasswordUseCase;
+        this.resetPasswordUseCase = resetPasswordUseCase;
     }
 
     @Override
@@ -33,5 +37,9 @@ public class UserServiceImpl implements UserUseCases {
     @Override
     public void forgotPassword(String email) {
         forgotPasswordUseCase.run(email);
+    }
+
+    public void resetPassword(String userId, String token, String password) {
+        resetPasswordUseCase.run(userId, token, password);
     }
 }

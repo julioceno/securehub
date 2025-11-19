@@ -2,6 +2,7 @@ package com.securehub.auth.adapters.in.controller;
 
 import com.securehub.auth.adapters.in.dto.EnableUserDTO;
 import com.securehub.auth.adapters.in.dto.ForgotPasswordDTO;
+import com.securehub.auth.adapters.in.dto.ResetPasswordDTO;
 import com.securehub.auth.adapters.in.dto.UserToCreateDTO;
 import com.securehub.auth.domain.user.User;
 import jakarta.validation.Valid;
@@ -58,6 +59,12 @@ public class UsersController {
     ) {
         userUseCases.forgotPassword(body.email());
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/password/reset")
+    public ResponseEntity<Void> reset(@RequestBody ResetPasswordDTO body) {
+        userUseCases.resetPassword(body.userId(), body.token(), body.password());
+        return ResponseEntity.ok().build();
     }
 
 }

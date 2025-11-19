@@ -28,6 +28,12 @@ public class UserRepositoryImpl implements UserRepositoryPort {
                 .map(this::toDomain);
     }
 
+    @Override
+    public Optional<User> findById(String id) {
+        return jpaUserRepository.findById(id)
+                .map(this::toDomain);
+    }
+
     private User toDomain(JpaUserEntity jpaUserEntity) {
         return new User(
                 jpaUserEntity.getId(),
