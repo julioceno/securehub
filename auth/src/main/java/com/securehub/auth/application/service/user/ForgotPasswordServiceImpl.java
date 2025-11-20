@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 public class ForgotPasswordServiceImpl implements ForgotPasswordUseCase {
     private static final Logger log = LoggerFactory.getLogger(ForgotPasswordServiceImpl.class);
@@ -40,9 +41,10 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordUseCase {
         User user = userRepositoryPort.findByEmail(email).orElse(null);
         if (user == null || !user.getEnabled()) return;
 
+        invalidateOldTokenIfExists(user.getId());
         String token = generateToken();
         Instant expiresAt = Instant.now().plus(15, ChronoUnit.MINUTES);
-        PasswordResetToken activationCode = new PasswordResetToken(
+        PasswordResetToken passwordResetToken = new PasswordResetToken(
                 null,
                 user.getId(),
                 String.valueOf(token),
@@ -51,10 +53,25 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordUseCase {
                 null
         );
 
-        passwordResetTokenRepositoryPort.save(activationCode);
+        passwordResetTokenRepositoryPort.save(passwordResetToken);
 
         log.info("ForgotPasswordServiceImpl.run - end - correlationId [{}] - userId [{}] - email [{}] token [{}]",
                 correlationId, user.getId(), user.getEmail(), token);
+    }
+
+    private void invalidateOldTokenIfExists(String userId) {
+        String correlationId = CorrelationId.get();
+        log.debug("ForgotPasswordServiceImpl.invalidateOldTokenIfExists - start - correlationId [{}]", correlationId);
+
+        Optional<PasswordResetToken> passwordResetToken = passwordResetTokenRepositoryPort.findByUserIdAndConfirmedAtIsNullAndDeletedAtIsNull(userId);
+        passwordResetToken.ifPresent(passwordResetTokenEntity -> {
+            log.debug("ForgotPasswordServiceImpl.invalidateOldTokenIfExists - set deleted date in password reset token - correlationId [{}] - passwordResetTokenId [{}] ", correlationId, passwordResetTokenEntity.getId());
+            passwordResetTokenEntity.setDeletedAt(Instant.now());
+            passwordResetTokenRepositoryPort.save(passwordResetTokenEntity);
+        });
+
+        log.debug("ForgotPasswordServiceImpl.invalidateOldTokenIfExists - end - correlationId [{}]", correlationId);
+
     }
 
     private String generateToken() {
