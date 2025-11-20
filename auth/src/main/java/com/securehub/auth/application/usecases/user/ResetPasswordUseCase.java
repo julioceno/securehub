@@ -1,5 +1,7 @@
 package com.securehub.auth.application.usecases.user;
 
+import com.securehub.auth.domain.passwordResetToken.RequestPasswordResetTokenDTO;
+
 public interface ResetPasswordUseCase {
-    void run(String userId, String rawToken, String newPlainPassword);
+    void run(RequestPasswordResetTokenDTO dto);
 }

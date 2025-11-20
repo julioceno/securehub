@@ -33,7 +33,7 @@ public class PasswordResetTokenRepositoryImpl implements PasswordResetTokenRepos
         return new PasswordResetToken(
             jpaPasswordResetTokenEntity.getId(),
             jpaPasswordResetTokenEntity.getUserId(),
-            jpaPasswordResetTokenEntity.toString(),
+            jpaPasswordResetTokenEntity.getToken(),
             jpaPasswordResetTokenEntity.getExpiresAt(),
             jpaPasswordResetTokenEntity.getConfirmedAt()
         );

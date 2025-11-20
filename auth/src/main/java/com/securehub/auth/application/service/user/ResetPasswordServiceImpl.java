@@ -5,6 +5,7 @@ import com.securehub.auth.application.usecases.user.ResetPasswordUseCase;
 import com.securehub.auth.application.util.CorrelationId;
 import com.securehub.auth.domain.passwordResetToken.PasswordResetToken;
 import com.securehub.auth.domain.passwordResetToken.PasswordResetTokenRepositoryPort;
+import com.securehub.auth.domain.passwordResetToken.RequestPasswordResetTokenDTO;
 import com.securehub.auth.domain.user.User;
 import com.securehub.auth.domain.user.UserRepositoryPort;
 import org.slf4j.Logger;
@@ -30,40 +31,67 @@ public class ResetPasswordServiceImpl implements ResetPasswordUseCase {
     }
 
     @Override
-    public void run(String userId, String token, String newPassword) {
+    public void run(RequestPasswordResetTokenDTO dto) {
         String correlationId = CorrelationId.get();
-        log.info("ResetPasswordServiceImpl.run - start - correlationId [{}] - userId [{}]", correlationId, userId);
+        log.info("ResetPasswordServiceImpl.run - start - correlationId [{}] - email [{}]", correlationId, dto.email());
 
-        PasswordResetToken passwordResetToken = passwordResetTokenRepositoryPort
-                .findByUserIdAndTokenAndConfirmedAtIsNull(userId, token)
-                .orElse(null);
+        User user = getUser(dto.email());
+        if (user == null) {
+            return;
+        }
 
+        PasswordResetToken passwordResetToken = getToken(user.getId(), dto.token());
         if (passwordResetToken == null) {
-            log.warn("ResetPasswordServiceImpl.run - token/user mismatch - correlationId [{}]", correlationId);
-            return;
-        }
-        if (passwordResetToken.getConfirmedAt() != null) {
-            log.warn("ResetPasswordServiceImpl.run - token already used - correlationId [{}]", correlationId);
-            return;
-        }
-        if (passwordResetToken.getExpiresAt().isBefore(Instant.now())) {
-            log.warn("ResetPasswordServiceImpl.run - token expired - correlationId [{}]", correlationId);
             return;
         }
 
-        User user = userRepositoryPort.findByEmail(userId).orElse(null);
-        if (user == null || !Boolean.TRUE.equals(user.getEnabled())) {
-            log.warn("ResetPasswordServiceImpl.run - invalid user - correlationId [{}]", correlationId);
-            return;
-        }
-
-        String passwordHashed = passwordHasher.hash(newPassword);
+        String passwordHashed = passwordHasher.hash(dto.newPassword());
         user.setPassword(passwordHashed);
         userRepositoryPort.save(user);
 
         passwordResetToken.setConfirmedAt(Instant.now());
         passwordResetTokenRepositoryPort.save(passwordResetToken);
 
-        log.info("ResetPasswordServiceImpl.run - end - correlationId [{}] - userId [{}]", correlationId, userId);
+        log.info("ResetPasswordServiceImpl.run - end - correlationId [{}] - email [{}]", correlationId, dto.email());
+    }
+
+    private User getUser(String email) {
+        String correlationId = CorrelationId.get();
+
+        User user = userRepositoryPort.findByEmail(email).orElse(null);
+        if (user == null) {
+            log.warn("ResetPasswordServiceImpl.getUser - correlationId [{}] -user [{}] not found", correlationId, email);
+            return null;
+        }
+
+        if (!Boolean.TRUE.equals(user.getEnabled())) {
+            log.warn("ResetPasswordServiceImpl.getUser - invalid user - correlationId [{}]", correlationId);
+            return null;
+        }
+
+        return user;
+    }
+
+    private PasswordResetToken getToken(String userId, String token) {
+        String correlationId = CorrelationId.get();
+
+        PasswordResetToken passwordResetToken = passwordResetTokenRepositoryPort
+                .findByUserIdAndTokenAndConfirmedAtIsNull(userId, token)
+                .orElse(null);
+
+        if (passwordResetToken == null) {
+            log.warn("ResetPasswordServiceImpl.getToken - token/user mismatch - correlationId [{}]", correlationId);
+            return null;
+        }
+        if (passwordResetToken.getConfirmedAt() != null) {
+            log.warn("ResetPasswordServiceImpl.getToken - token already used - correlationId [{}]", correlationId);
+            return null;
+        }
+        if (passwordResetToken.getExpiresAt().isBefore(Instant.now())) {
+            log.warn("ResetPasswordServiceImpl.getToken - token expired - correlationId [{}]", correlationId);
+            return null;
+        }
+
+        return passwordResetToken;
     }
 }

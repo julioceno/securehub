@@ -4,6 +4,7 @@ import com.securehub.auth.adapters.in.dto.EnableUserDTO;
 import com.securehub.auth.adapters.in.dto.ForgotPasswordDTO;
 import com.securehub.auth.adapters.in.dto.ResetPasswordDTO;
 import com.securehub.auth.adapters.in.dto.UserToCreateDTO;
+import com.securehub.auth.domain.passwordResetToken.RequestPasswordResetTokenDTO;
 import com.securehub.auth.domain.user.User;
 import jakarta.validation.Valid;
 import com.securehub.auth.application.usecases.user.UserUseCases;
@@ -25,7 +26,7 @@ public class UsersController {
 
     @PostMapping()
     public ResponseEntity<UserDTO> createUser(
-           @Valid @RequestBody UserToCreateDTO body
+           @RequestBody @Valid UserToCreateDTO body
     ) {
         User user = new User(
                 null,
@@ -43,7 +44,6 @@ public class UsersController {
 
         return ResponseEntity.created(location).body(userDTO);
     }
-
 
     @PostMapping("/enable")
     public ResponseEntity<UserDTO> createActiveUser(
@@ -63,8 +63,9 @@ public class UsersController {
 
     @PostMapping("/password/reset")
     public ResponseEntity<Void> reset(@RequestBody ResetPasswordDTO body) {
-        userUseCases.resetPassword(body.userId(), body.token(), body.password());
-        return ResponseEntity.ok().build();
+        RequestPasswordResetTokenDTO dto = new RequestPasswordResetTokenDTO(body.email(), body.token(), body.password());
+        userUseCases.resetPassword(dto);
+        return ResponseEntity.noContent().build();
     }
 
 }

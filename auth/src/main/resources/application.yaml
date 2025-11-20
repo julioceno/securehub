@@ -7,9 +7,12 @@ spring:
     password: postgres
     driver-class-name: org.postgresql.Driver
 
-jwt:
-  secret: secret
-  expirationInSeconds: 3600
+api:
+  jwt:
+    secret: jwt-secret
+    expirationInSeconds: 10
+  encrypt:
+    secret: encrypt-secret
 
 logging:
   level:

@@ -1,6 +1,7 @@
 package com.securehub.auth.application.service.user;
 
 import com.securehub.auth.application.usecases.user.*;
+import com.securehub.auth.domain.passwordResetToken.RequestPasswordResetTokenDTO;
 import com.securehub.auth.domain.user.User;
 import com.securehub.auth.domain.user.UserDTO;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ public class UserServiceImpl implements UserUseCases {
         forgotPasswordUseCase.run(email);
     }
 
-    public void resetPassword(String userId, String token, String password) {
-        resetPasswordUseCase.run(userId, token, password);
+    public void resetPassword(RequestPasswordResetTokenDTO dto) {
+        resetPasswordUseCase.run(dto);
     }
 }

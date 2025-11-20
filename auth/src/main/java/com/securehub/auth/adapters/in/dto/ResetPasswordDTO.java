@@ -6,7 +6,8 @@ import jakarta.validation.constraints.Size;
 
 public record ResetPasswordDTO(
     @NotBlank(message = "{validation.required}")
-    String userId,
+    @Email(message = "{validation.invalid}")
+    String email,
 
     @NotBlank(message = "{validation.required}")
     String token,

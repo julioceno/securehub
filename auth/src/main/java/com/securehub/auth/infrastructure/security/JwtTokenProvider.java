@@ -18,8 +18,8 @@ public class JwtTokenProvider implements TokenProviderPort {
     private final long expirationInSeconds;
 
     public JwtTokenProvider(
-            @Value("${jwt.secret}") String secretKey,
-            @Value("${jwt.expirationInSeconds}") long expirationInSeconds
+            @Value("${api.jwt.secret}") String secretKey,
+            @Value("${api.jwt.expirationInSeconds}") long expirationInSeconds
     ) {
         this.secretKey = secretKey;
         this.expirationInSeconds = expirationInSeconds;
@@ -53,7 +53,6 @@ public class JwtTokenProvider implements TokenProviderPort {
 
             return subject;
         } catch (JWTVerificationException exception) {
-            exception.printStackTrace();
             return null;
         }
     }
