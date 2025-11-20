@@ -28,11 +28,15 @@ public class JpaPasswordResetTokenEntity {
     @Column(name = "confirmed_at")
     private Instant confirmedAt;
 
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+
     public JpaPasswordResetTokenEntity(PasswordResetToken passwordResetToken) {
         this.id = passwordResetToken.getId();
         this.userId = passwordResetToken.getUserId();
         this.token = passwordResetToken.getToken();
         this.expiresAt = passwordResetToken.getExpiresAt();
         this.confirmedAt = passwordResetToken.getConfirmedAt();
+        this.deletedAt = passwordResetToken.getDeletedAt();
     }
 }

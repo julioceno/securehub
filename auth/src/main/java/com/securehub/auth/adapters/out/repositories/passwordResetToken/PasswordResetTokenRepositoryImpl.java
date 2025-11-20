@@ -24,8 +24,8 @@ public class PasswordResetTokenRepositoryImpl implements PasswordResetTokenRepos
     }
 
     @Override
-    public Optional<PasswordResetToken> findByUserIdAndTokenAndConfirmedAtIsNull(String userId, String token) {
-        return jpaPasswordResetTokenRepository.findByUserIdAndTokenAndConfirmedAtIsNull(userId, token)
+    public Optional<PasswordResetToken> findByUserIdAndConfirmedAtIsNullAndDeletedAtIsNull(String userId) {
+        return jpaPasswordResetTokenRepository.findByUserIdAndConfirmedAtIsNullAndDeletedAtIsNull(userId)
                 .map(this::toDomain);
     }
 
@@ -35,7 +35,8 @@ public class PasswordResetTokenRepositoryImpl implements PasswordResetTokenRepos
             jpaPasswordResetTokenEntity.getUserId(),
             jpaPasswordResetTokenEntity.getToken(),
             jpaPasswordResetTokenEntity.getExpiresAt(),
-            jpaPasswordResetTokenEntity.getConfirmedAt()
+            jpaPasswordResetTokenEntity.getConfirmedAt(),
+            jpaPasswordResetTokenEntity.getDeletedAt()
         );
     }
 }

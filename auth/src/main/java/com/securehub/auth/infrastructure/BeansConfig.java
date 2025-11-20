@@ -49,13 +49,22 @@ public class BeansConfig {
     }
 
     @Bean
-    public ForgotPasswordUseCase forgotPasswordUseCase(UserRepositoryPort userRepositoryPort, PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort) {
-        return new ForgotPasswordServiceImpl(userRepositoryPort, passwordResetTokenRepositoryPort);
+    public ForgotPasswordUseCase forgotPasswordUseCase(
+            UserRepositoryPort userRepositoryPort,
+            PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort,
+            TokenEncryptorPort tokenEncryptorPort
+    ) {
+        return new ForgotPasswordServiceImpl(userRepositoryPort, passwordResetTokenRepositoryPort, tokenEncryptorPort);
     }
 
     @Bean
-    public ResetPasswordUseCase resetPasswordUseCase(UserRepositoryPort userRepositoryPort, PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort, PasswordHasher passwordHasher) {
-        return new ResetPasswordServiceImpl(userRepositoryPort, passwordResetTokenRepositoryPort, passwordHasher);
+    public ResetPasswordUseCase resetPasswordUseCase(
+            UserRepositoryPort userRepositoryPort,
+            PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort,
+            PasswordHasher passwordHasher,
+            TokenEncryptorPort tokenEncryptorPort
+    ) {
+        return new ResetPasswordServiceImpl(userRepositoryPort, passwordResetTokenRepositoryPort, passwordHasher, tokenEncryptorPort);
     }
 
     @Bean

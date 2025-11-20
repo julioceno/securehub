@@ -1,5 +1,7 @@
 package com.securehub.auth.application.service.user;
 
+import com.securehub.auth.application.exception.BadRequestException;
+import com.securehub.auth.application.port.out.TokenEncryptorPort;
 import com.securehub.auth.application.usecases.user.ForgotPasswordUseCase;
 import com.securehub.auth.application.util.CorrelationId;
 import com.securehub.auth.domain.passwordResetToken.PasswordResetToken;
@@ -18,35 +20,56 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordUseCase {
 
     private final UserRepositoryPort userRepositoryPort;
     private final PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort;
+    private final TokenEncryptorPort tokenEncryptorPort;
 
-    public ForgotPasswordServiceImpl(UserRepositoryPort userRepositoryPort, PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort) {
+    public ForgotPasswordServiceImpl(
+            UserRepositoryPort userRepositoryPort,
+            PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort,
+            TokenEncryptorPort tokenEncryptorPort
+    ) {
         this.userRepositoryPort = userRepositoryPort;
         this.passwordResetTokenRepositoryPort = passwordResetTokenRepositoryPort;
+        this.tokenEncryptorPort = tokenEncryptorPort;
     }
 
     @Override
     public void run(String email) {
         String correlationId = CorrelationId.get();
-        log.info("ForgotPasswordServiceImpl.createToken - start - correlationId [{}] - email [{}]", correlationId, email);
+        log.info("ForgotPasswordServiceImpl.run - start - correlationId [{}] - email [{}]", correlationId, email);
 
         User user = userRepositoryPort.findByEmail(email).orElse(null);
         if (user == null || !user.getEnabled()) return;
 
-        SecureRandom random = new SecureRandom();
-        int token = 100000 + random.nextInt(900000);
-
+        String token = generateToken();
         Instant expiresAt = Instant.now().plus(15, ChronoUnit.MINUTES);
         PasswordResetToken activationCode = new PasswordResetToken(
                 null,
                 user.getId(),
                 String.valueOf(token),
                 expiresAt,
+                null,
                 null
         );
 
         passwordResetTokenRepositoryPort.save(activationCode);
 
-        log.info("ForgotPasswordServiceImpl.createToken - end - correlationId [{}] - userId [{}] - email [{}] token [{}]",
+        log.info("ForgotPasswordServiceImpl.run - end - correlationId [{}] - userId [{}] - email [{}] token [{}]",
                 correlationId, user.getId(), user.getEmail(), token);
+    }
+
+    private String generateToken() {
+        String correlationId = CorrelationId.get();
+        log.debug("ForgotPasswordServiceImpl.generateToken - start - correlationId [{}]", correlationId);
+        try {
+            SecureRandom random = new SecureRandom();
+            int token = 100000 + random.nextInt(900000);
+
+            String encryptedToken = tokenEncryptorPort.encrypt(String.valueOf(token));
+            log.debug("ForgotPasswordServiceImpl.generateToken - end - correlationId [{}]", correlationId);
+            return encryptedToken;
+        } catch(Exception ex) {
+            log.error("ForgotPasswordServiceImpl.generateToken - an error occurred while generating the token - correlationId [{}]", correlationId);
+            throw new BadRequestException("An error occurred while generating the token");
+        }
     }
 }

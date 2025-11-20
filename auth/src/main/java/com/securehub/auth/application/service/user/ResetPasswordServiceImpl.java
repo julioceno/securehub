@@ -1,6 +1,8 @@
 package com.securehub.auth.application.service.user;
 
+import com.securehub.auth.application.exception.BadRequestException;
 import com.securehub.auth.application.port.out.PasswordHasher;
+import com.securehub.auth.application.port.out.TokenEncryptorPort;
 import com.securehub.auth.application.usecases.user.ResetPasswordUseCase;
 import com.securehub.auth.application.util.CorrelationId;
 import com.securehub.auth.domain.passwordResetToken.PasswordResetToken;
@@ -19,15 +21,18 @@ public class ResetPasswordServiceImpl implements ResetPasswordUseCase {
     private final UserRepositoryPort userRepositoryPort;
     private final PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort;
     private final PasswordHasher passwordHasher;
+    private final TokenEncryptorPort  tokenEncryptorPort;
 
     public ResetPasswordServiceImpl(
             UserRepositoryPort userRepositoryPort,
             PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort,
-            PasswordHasher passwordHasher
+            PasswordHasher passwordHasher,
+            TokenEncryptorPort  tokenEncryptorPort
     ) {
         this.userRepositoryPort = userRepositoryPort;
         this.passwordResetTokenRepositoryPort = passwordResetTokenRepositoryPort;
         this.passwordHasher = passwordHasher;
+        this.tokenEncryptorPort = tokenEncryptorPort;
     }
 
     @Override
@@ -40,8 +45,13 @@ public class ResetPasswordServiceImpl implements ResetPasswordUseCase {
             return;
         }
 
-        PasswordResetToken passwordResetToken = getToken(user.getId(), dto.token());
+        PasswordResetToken passwordResetToken = getToken(user.getId());
         if (passwordResetToken == null) {
+            return;
+        }
+        boolean isValid = tokenEncryptorPort.compare(dto.token(), passwordResetToken.getToken());
+        if (!isValid) {
+            log.warn("ResetPasswordServiceImpl.run - correlationId [{}] is invalid", correlationId);
             return;
         }
 
@@ -57,6 +67,7 @@ public class ResetPasswordServiceImpl implements ResetPasswordUseCase {
 
     private User getUser(String email) {
         String correlationId = CorrelationId.get();
+        log.debug("ResetPasswordServiceImpl.getUser - start - correlationId [{}] - email [{}]", correlationId, email);
 
         User user = userRepositoryPort.findByEmail(email).orElse(null);
         if (user == null) {
@@ -69,20 +80,28 @@ public class ResetPasswordServiceImpl implements ResetPasswordUseCase {
             return null;
         }
 
+        log.debug("ResetPasswordServiceImpl.getUser - end - correlationId [{}] - email [{}]", correlationId, email);
         return user;
     }
 
-    private PasswordResetToken getToken(String userId, String token) {
+    private PasswordResetToken getToken(String userId) {
         String correlationId = CorrelationId.get();
+        log.debug("ResetPasswordServiceImpl.getToken - start - correlationId [{}] - userId [{}]", correlationId, userId);
 
         PasswordResetToken passwordResetToken = passwordResetTokenRepositoryPort
-                .findByUserIdAndTokenAndConfirmedAtIsNull(userId, token)
+                .findByUserIdAndConfirmedAtIsNullAndDeletedAtIsNull(userId)
                 .orElse(null);
 
         if (passwordResetToken == null) {
             log.warn("ResetPasswordServiceImpl.getToken - token/user mismatch - correlationId [{}]", correlationId);
             return null;
         }
+
+        if (passwordResetToken.getDeletedAt() != null) {
+            log.warn("ResetPasswordServiceImpl.getToken - token is deleted - correlationId [{}]", correlationId);
+            return null;
+        }
+
         if (passwordResetToken.getConfirmedAt() != null) {
             log.warn("ResetPasswordServiceImpl.getToken - token already used - correlationId [{}]", correlationId);
             return null;
@@ -92,6 +111,7 @@ public class ResetPasswordServiceImpl implements ResetPasswordUseCase {
             return null;
         }
 
+        log.debug("ResetPasswordServiceImpl.getToken - end - correlationId [{}] - userId [{}]", correlationId, userId);
         return passwordResetToken;
     }
 }

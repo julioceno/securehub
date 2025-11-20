@@ -8,16 +8,18 @@ public class PasswordResetToken {
     private String token;
     private Instant expiresAt;
     private Instant confirmedAt;
+    private Instant deletedAt;
 
     public PasswordResetToken() {
     }
 
-    public PasswordResetToken(String id, String userId, String token, Instant expiresAt, Instant confirmedAt) {
+    public PasswordResetToken(String id, String userId, String token, Instant expiresAt, Instant confirmedAt, Instant deletedAt) {
         this.id = id;
         this.userId = userId;
         this.token = token;
         this.expiresAt = expiresAt;
         this.confirmedAt = confirmedAt;
+        this.deletedAt = deletedAt;
     }
 
     public String getId() {
@@ -58,5 +60,13 @@ public class PasswordResetToken {
 
     public void setConfirmedAt(Instant confirmedAt) {
         this.confirmedAt = confirmedAt;
+    }
+
+    public Instant getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(Instant deletedAt) {
+        this.deletedAt = deletedAt;
     }
 }

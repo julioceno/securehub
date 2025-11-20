@@ -6,5 +6,5 @@ public interface PasswordResetTokenRepositoryPort {
 
     PasswordResetToken save(PasswordResetToken passwordResetToken);
 
-    Optional<PasswordResetToken> findByUserIdAndTokenAndConfirmedAtIsNull(String userId, String code);
+    Optional<PasswordResetToken> findByUserIdAndConfirmedAtIsNullAndDeletedAtIsNull(String userId);
 }
