@@ -12,4 +12,5 @@ public interface JpaActivationCodeRepository extends JpaRepository<JpaActivation
 
     Optional<JpaActivationCodeEntity> findByUserIdAndCodeAndConfirmedAtIsNull(String userId, String code);
 
+    Optional<JpaActivationCodeEntity> findByUserIdAndConfirmedAtIsNullAndDeletedAtIsNull(String userId);
 }

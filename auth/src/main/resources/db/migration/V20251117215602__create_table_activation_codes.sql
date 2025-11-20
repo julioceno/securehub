@@ -4,6 +4,7 @@ CREATE TABLE activation_codes (
     code TEXT NOT NULL,
     expires_at TIMESTAMP NOT NULL,
     confirmed_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
 
     CONSTRAINT fk_activation_user
       FOREIGN KEY (user_id)

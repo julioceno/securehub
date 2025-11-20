@@ -6,5 +6,5 @@ public interface ActivationCodeRepositoryPort {
 
     ActivationCode save(ActivationCode activationCode);
 
-    Optional<ActivationCode> findByUserIdAndCodeAndConfirmedAtIsNull(String userId, String code);
+    Optional<ActivationCode> findByUserIdAndConfirmedAtIsNullAndDeletedAtIsNull(String userId);
 }

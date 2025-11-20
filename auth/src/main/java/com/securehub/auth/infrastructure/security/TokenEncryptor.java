@@ -40,17 +40,17 @@ public class TokenEncryptor implements TokenEncryptorPort {
     public boolean compare(
             String rawToken,
             String storedHmac
-    ) throws Exception {
+    ) {
         if (rawToken == null || secretKey == null || storedHmac == null) {
             return false;
         }
 
-        String newHmac = encrypt(rawToken);
         try {
+            String newHmac = encrypt(rawToken);
             byte[] a = HexFormat.of().parseHex(newHmac);
             byte[] b = HexFormat.of().parseHex(storedHmac);
             return MessageDigest.isEqual(a, b);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             return false;
         }
     }

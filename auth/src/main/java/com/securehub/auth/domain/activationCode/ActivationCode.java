@@ -8,16 +8,18 @@ public class ActivationCode {
     private String code;
     private Instant expiresAt;
     private Instant confirmedAt;
+    private Instant deletedAt;
 
     public ActivationCode() {
     }
 
-    public ActivationCode(String id, String userId, String code, Instant expiresAt, Instant confirmedAt) {
+    public ActivationCode(String id, String userId, String code, Instant expiresAt, Instant confirmedAt, Instant deletedAt) {
         this.id = id;
         this.userId = userId;
         this.code = code;
         this.expiresAt = expiresAt;
         this.confirmedAt = confirmedAt;
+        this.deletedAt = deletedAt;
     }
 
     public String getId() {
@@ -58,5 +60,13 @@ public class ActivationCode {
 
     public void setConfirmedAt(Instant confirmedAt) {
         this.confirmedAt = confirmedAt;
+    }
+
+    public Instant getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(Instant deletedAt) {
+        this.deletedAt = deletedAt;
     }
 }

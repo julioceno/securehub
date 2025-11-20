@@ -27,11 +27,15 @@ public class JpaActivationCodeEntity {
     @Column(name = "confirmed_at")
     private Instant confirmedAt;
 
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+
     public JpaActivationCodeEntity(ActivationCode activationCode) {
         this.id = activationCode.getId();
         this.userId = activationCode.getUserId();
         this.code = activationCode.getCode();
         this.expiresAt = activationCode.getExpiresAt();
         this.confirmedAt = activationCode.getConfirmedAt();
+        this.deletedAt = activationCode.getDeletedAt();
     }
 }

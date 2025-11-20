@@ -22,10 +22,9 @@ public class ActivationCodeImpl implements ActivationCodeRepositoryPort {
         return toDomain(activationCodeEntity);
     }
 
-
     @Override
-    public Optional<ActivationCode> findByUserIdAndCodeAndConfirmedAtIsNull(String userId, String code) {
-        return activationCodeRepository.findByUserIdAndCodeAndConfirmedAtIsNull(userId, code)
+    public Optional<ActivationCode> findByUserIdAndConfirmedAtIsNullAndDeletedAtIsNull(String userId) {
+        return activationCodeRepository.findByUserIdAndConfirmedAtIsNullAndDeletedAtIsNull(userId)
                 .map(this::toDomain);
     }
 
@@ -35,7 +34,8 @@ public class ActivationCodeImpl implements ActivationCodeRepositoryPort {
             entity.getUserId(),
             entity.getCode(),
             entity.getExpiresAt(),
-            entity.getConfirmedAt()
+            entity.getConfirmedAt(),
+            entity.getDeletedAt()
         );
     }
 }

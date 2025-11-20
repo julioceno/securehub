@@ -3,6 +3,7 @@ package com.securehub.auth.application.service.user;
 import com.securehub.auth.application.exception.BadRequestException;
 import com.securehub.auth.application.mapper.UserMapper;
 import com.securehub.auth.application.port.out.PasswordHasher;
+import com.securehub.auth.application.port.out.TokenEncryptorPort;
 import com.securehub.auth.application.usecases.user.CreateUserUseCases;
 import com.securehub.auth.application.util.CorrelationId;
 import com.securehub.auth.domain.activationCode.ActivationCode;
@@ -26,12 +27,14 @@ public class CreateUserServiceImpl implements CreateUserUseCases {
     private final ActivationCodeRepositoryPort activationCodeRepositoryPort;
     private final UserMapper userMapper;
     private final PasswordHasher passwordHasher;
+    private final TokenEncryptorPort tokenEncryptorPort;
 
-    public CreateUserServiceImpl(UserRepositoryPort userRepository, ActivationCodeRepositoryPort activationCodeRepositoryPort, UserMapper userMapper, PasswordHasher passwordHasher) {
+    public CreateUserServiceImpl(UserRepositoryPort userRepository, ActivationCodeRepositoryPort activationCodeRepositoryPort, UserMapper userMapper, PasswordHasher passwordHasher, TokenEncryptorPort tokenEncryptorPort) {
         this.userRepository = userRepository;
         this.activationCodeRepositoryPort = activationCodeRepositoryPort;
         this.userMapper = userMapper;
         this.passwordHasher = passwordHasher;
+        this.tokenEncryptorPort = tokenEncryptorPort;
     }
 
     @Override
@@ -65,15 +68,14 @@ public class CreateUserServiceImpl implements CreateUserUseCases {
         log.debug("UserServiceImpl.createActivationCode - start - correlationId [{}] - userId [{}] - email [{}]",
                 correlationId, userCreated.getId(), userCreated.getEmail());
 
-        SecureRandom random = new SecureRandom();
-        int code = 100000 + random.nextInt(900000);
-
+        String code = generateEncryptedCode();
         Instant expiresAt = Instant.now().plus(15, ChronoUnit.MINUTES);
         ActivationCode activationCode = new ActivationCode(
                 null,
                 userCreated.getId(),
-                String.valueOf(code),
+                code,
                 expiresAt,
+                null,
                 null
         );
 
@@ -82,4 +84,15 @@ public class CreateUserServiceImpl implements CreateUserUseCases {
         log.debug("UserServiceImpl.createActivationCode - end - correlationId [{}] - userId [{}] - email [{}] code [{}]",
                 correlationId, userCreated.getId(), userCreated.getEmail(), code);
     }
+
+    private String generateEncryptedCode () {
+        try {
+            SecureRandom random = new SecureRandom();
+            int code = 100000 + random.nextInt(900000);
+
+            return tokenEncryptorPort.encrypt(String.valueOf(code));
+        } catch (Exception e) {
+            throw new BadRequestException("An error occurred while generating the code");
+        }
+    };
 }

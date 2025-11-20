@@ -2,6 +2,7 @@ package com.securehub.auth.infrastructure;
 
 import com.securehub.auth.application.mapper.UserMapper;
 import com.securehub.auth.application.port.out.PasswordHasher;
+import com.securehub.auth.application.port.out.TokenEncryptorPort;
 import com.securehub.auth.application.port.out.TokenProviderPort;
 import com.securehub.auth.application.service.auth.AuthenticateUserService;
 import com.securehub.auth.application.service.user.*;
@@ -27,17 +28,28 @@ public class BeansConfig {
     }
 
     @Bean
-    public CreateUserUseCases createUserService(UserRepositoryPort userRepository, ActivationCodeRepositoryPort activationCodeRepository, UserMapper userMapper, PasswordHasher passwordHasher) {
-        return new CreateUserServiceImpl(userRepository, activationCodeRepository, userMapper, passwordHasher);
+    public CreateUserUseCases createUserService(
+            UserRepositoryPort userRepository,
+            ActivationCodeRepositoryPort activationCodeRepository,
+            UserMapper userMapper,
+            PasswordHasher passwordHasher,
+            TokenEncryptorPort tokenEncryptorPort
+    ) {
+        return new CreateUserServiceImpl(userRepository, activationCodeRepository, userMapper, passwordHasher, tokenEncryptorPort);
     }
 
     @Bean
-    public ActivateUserUseCase activateUserUseCase(UserRepositoryPort userRepositoryPort, ActivationCodeRepositoryPort activationCodeRepositoryPort, UserMapper userMapper) {
-        return new ActivateUserServiceImpl(userRepositoryPort, activationCodeRepositoryPort, userMapper);
+    public ActivateUserUseCase activateUserUseCase(
+            UserRepositoryPort userRepositoryPort,
+            ActivationCodeRepositoryPort activationCodeRepositoryPort,
+            UserMapper userMapper,
+            TokenEncryptorPort tokenEncryptorPort
+    ) {
+        return new ActivateUserServiceImpl(userRepositoryPort, activationCodeRepositoryPort, userMapper, tokenEncryptorPort);
     }
 
     @Bean
-    public ForgotPasswordUseCase  forgotPasswordUseCase(UserRepositoryPort userRepositoryPort, PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort) {
+    public ForgotPasswordUseCase forgotPasswordUseCase(UserRepositoryPort userRepositoryPort, PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort) {
         return new ForgotPasswordServiceImpl(userRepositoryPort, passwordResetTokenRepositoryPort);
     }
 
