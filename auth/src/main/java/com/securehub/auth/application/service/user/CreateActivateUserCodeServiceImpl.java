@@ -64,7 +64,7 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
         log.debug("CreateActivateUserCodeServiceImpl.invalidateOldCodeIfExists - end - correlationId [{}]", correlationId);
     }
 
-    private String generateEncryptedCode () {
+    private String generateEncryptedCode() {
         try {
             SecureRandom random = new SecureRandom();
             int code = 100000 + random.nextInt(900000);

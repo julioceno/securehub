@@ -11,6 +11,7 @@ api:
   jwt:
     secret: jwt-secret
     expirationInSeconds: 10
+    issuer: secure-hub
   encrypt:
     secret: encrypt-secret
 
