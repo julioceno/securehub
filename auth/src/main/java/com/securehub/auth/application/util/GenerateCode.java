@@ -2,7 +2,7 @@ package com.securehub.auth.application.util;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class GenerateCode {
+public final class GenerateCode {
     public static String generateCode(int length) {
         StringBuilder sb = new StringBuilder(length);
 
