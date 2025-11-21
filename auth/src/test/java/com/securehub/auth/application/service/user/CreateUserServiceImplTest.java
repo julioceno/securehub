@@ -3,6 +3,7 @@ package com.securehub.auth.application.service.user;
 import com.securehub.auth.application.exception.BadRequestException;
 import com.securehub.auth.application.mapper.UserMapper;
 import com.securehub.auth.application.port.out.PasswordHasher;
+import com.securehub.auth.application.usecases.user.CreateActivateUserCodeUseCase;
 import com.securehub.auth.domain.user.User;
 import com.securehub.auth.domain.user.UserDTO;
 import com.securehub.auth.domain.user.UserRepositoryPort;
@@ -15,8 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class CreateUserServiceImplTest {
@@ -29,45 +30,48 @@ class CreateUserServiceImplTest {
     @Mock
     private PasswordHasher passwordHasher;
 
+    @Mock
+    private CreateActivateUserCodeUseCase createActivateUserCodeUseCase;
+
     @InjectMocks
     private CreateUserServiceImpl createUserService;
 
     @Test
     void shouldCreateUserSuccessfully() {
-        UserToCreateDTO toCreateDTO = new UserToCreateDTO("username", "test@securehub.com", "password");
-
-        User userEntity = mock(User.class);
-        when(userMapper.toEntityFromCreateDTO(toCreateDTO)).thenReturn(userEntity);
-        when(userEntity.getPassword()).thenReturn("password");
+        User userEntity = spy(new User(null, "username", "test@securehub.com", "password", false));
 
         when(passwordHasher.hash("password")).thenReturn("passwordHashed");
-
         when(userRepository.findByEmail("test@securehub.com")).thenReturn(Optional.empty());
-        when(userRepository.save(userEntity)).thenReturn(userEntity);
+
+        User savedUser = new User("Id", "username", "test@securehub.com", "passwordHashed", false);
+        when(userRepository.save(userEntity)).thenReturn(savedUser);
 
         UserDTO expectedDto = new UserDTO("Id", "username", "test@securehub.com");
-        when(userMapper.toDto(userEntity)).thenReturn(expectedDto);
+        when(userMapper.toDto(savedUser)).thenReturn(expectedDto);
 
-        UserDTO result = createUserService.run(toCreateDTO);
+        UserDTO result = createUserService.run(userEntity);
 
         verify(passwordHasher).hash("password");
         verify(userEntity).setPassword("passwordHashed");
         verify(userRepository).save(userEntity);
+        verify(createActivateUserCodeUseCase).run("Id");
         assertEquals(expectedDto, result);
     }
 
     @Test
     void shouldThrowBadRequest_When_EmailAlreadyExists() {
-        UserToCreateDTO toCreateDTO = new UserToCreateDTO("username", "test@securehub.com", "password");
-        User userEntity = mock(User.class);
-        when(userRepository.findByEmail("test@securehub.com")).thenReturn(Optional.of(userEntity));
+        User userToCreate = new User(null, "username", "test@securehub.com", "password", false);
 
-        BadRequestException ex = assertThrows(BadRequestException.class, () -> createUserService.run(toCreateDTO));
+        User existing = new User("existingId", "other", "test@securehub.com", "xxx", true);
+        when(userRepository.findByEmail("test@securehub.com")).thenReturn(Optional.of(existing));
+
+        BadRequestException ex = assertThrows(BadRequestException.class, () -> createUserService.run(userToCreate));
 
         assertEquals("User with email [test@securehub.com] already used", ex.getMessage());
         verify(userRepository).findByEmail("test@securehub.com");
-        verify(userRepository, never()).save(userEntity);
+        verify(userRepository, never()).save(any());
         verify(passwordHasher, never()).hash(anyString());
         verify(userMapper, never()).toDto(any());
+        verify(createActivateUserCodeUseCase, never()).run(anyString());
     }
 }
