@@ -1,7 +1,7 @@
 package com.securehub.auth.application.service.user;
 
 import com.securehub.auth.application.exception.BadRequestException;
-import com.securehub.auth.application.port.out.TokenEncryptorPort;
+import com.securehub.auth.application.port.out.SignerPort;
 import com.securehub.auth.application.usecases.user.ForgotPasswordUseCase;
 import com.securehub.auth.application.util.CorrelationId;
 import com.securehub.auth.domain.passwordResetToken.PasswordResetToken;
@@ -14,23 +14,22 @@ import org.slf4j.LoggerFactory;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 
 public class ForgotPasswordServiceImpl implements ForgotPasswordUseCase {
     private static final Logger log = LoggerFactory.getLogger(ForgotPasswordServiceImpl.class);
 
     private final UserRepositoryPort userRepositoryPort;
     private final PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort;
-    private final TokenEncryptorPort tokenEncryptorPort;
+    private final SignerPort signerPort;
 
     public ForgotPasswordServiceImpl(
             UserRepositoryPort userRepositoryPort,
             PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort,
-            TokenEncryptorPort tokenEncryptorPort
+            SignerPort signerPort
     ) {
         this.userRepositoryPort = userRepositoryPort;
         this.passwordResetTokenRepositoryPort = passwordResetTokenRepositoryPort;
-        this.tokenEncryptorPort = tokenEncryptorPort;
+        this.signerPort = signerPort;
     }
 
     @Override
@@ -80,7 +79,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordUseCase {
             SecureRandom random = new SecureRandom();
             int token = 100000 + random.nextInt(900000);
 
-            String encryptedToken = tokenEncryptorPort.encrypt(String.valueOf(token));
+            String encryptedToken = signerPort.encrypt(String.valueOf(token));
             log.debug("ForgotPasswordServiceImpl.generateToken - end - correlationId [{}]", correlationId);
             return encryptedToken;
         } catch(Exception ex) {

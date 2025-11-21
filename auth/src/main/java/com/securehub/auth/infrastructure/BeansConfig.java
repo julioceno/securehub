@@ -2,7 +2,7 @@ package com.securehub.auth.infrastructure;
 
 import com.securehub.auth.application.mapper.UserMapper;
 import com.securehub.auth.application.port.out.PasswordHasher;
-import com.securehub.auth.application.port.out.TokenEncryptorPort;
+import com.securehub.auth.application.port.out.SignerPort;
 import com.securehub.auth.application.port.out.TokenProviderPort;
 import com.securehub.auth.application.service.auth.AuthenticateUserService;
 import com.securehub.auth.application.service.user.*;
@@ -30,12 +30,11 @@ public class BeansConfig {
     @Bean
     public CreateUserUseCases createUserService(
             UserRepositoryPort userRepository,
-            ActivationCodeRepositoryPort activationCodeRepository,
             UserMapper userMapper,
             PasswordHasher passwordHasher,
-            TokenEncryptorPort tokenEncryptorPort
+            CreateActivateUserCodeUseCase createActivateUserCodeUseCase
     ) {
-        return new CreateUserServiceImpl(userRepository, activationCodeRepository, userMapper, passwordHasher, tokenEncryptorPort);
+        return new CreateUserServiceImpl(userRepository, userMapper, passwordHasher, createActivateUserCodeUseCase);
     }
 
     @Bean
@@ -43,23 +42,23 @@ public class BeansConfig {
             UserRepositoryPort userRepositoryPort,
             ActivationCodeRepositoryPort activationCodeRepositoryPort,
             UserMapper userMapper,
-            TokenEncryptorPort tokenEncryptorPort
+            SignerPort signerPort
     ) {
-        return new ActivateUserServiceImpl(userRepositoryPort, activationCodeRepositoryPort, userMapper, tokenEncryptorPort);
+        return new ActivateUserServiceImpl(userRepositoryPort, activationCodeRepositoryPort, userMapper, signerPort);
     }
 
     @Bean
-    public CreateActivateUserCodeUseCase createPasswordResetTokenUseCase(ActivationCodeRepositoryPort activationCodeRepositoryPort, TokenEncryptorPort tokenEncryptorPort) {
-        return new CreateActivateUserCodeServiceImpl(activationCodeRepositoryPort, tokenEncryptorPort);
+    public CreateActivateUserCodeUseCase createPasswordResetTokenUseCase(ActivationCodeRepositoryPort activationCodeRepositoryPort, SignerPort signerPort) {
+        return new CreateActivateUserCodeServiceImpl(activationCodeRepositoryPort, signerPort);
     }
 
     @Bean
     public ForgotPasswordUseCase forgotPasswordUseCase(
             UserRepositoryPort userRepositoryPort,
             PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort,
-            TokenEncryptorPort tokenEncryptorPort
+            SignerPort signerPort
     ) {
-        return new ForgotPasswordServiceImpl(userRepositoryPort, passwordResetTokenRepositoryPort, tokenEncryptorPort);
+        return new ForgotPasswordServiceImpl(userRepositoryPort, passwordResetTokenRepositoryPort, signerPort);
     }
 
     @Bean
@@ -67,9 +66,9 @@ public class BeansConfig {
             UserRepositoryPort userRepositoryPort,
             PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort,
             PasswordHasher passwordHasher,
-            TokenEncryptorPort tokenEncryptorPort
+            SignerPort signerPort
     ) {
-        return new ResetPasswordServiceImpl(userRepositoryPort, passwordResetTokenRepositoryPort, passwordHasher, tokenEncryptorPort);
+        return new ResetPasswordServiceImpl(userRepositoryPort, passwordResetTokenRepositoryPort, passwordHasher, signerPort);
     }
 
     @Bean

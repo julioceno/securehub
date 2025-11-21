@@ -3,11 +3,9 @@ package com.securehub.auth.application.service.user;
 import com.securehub.auth.application.exception.BadRequestException;
 import com.securehub.auth.application.mapper.UserMapper;
 import com.securehub.auth.application.port.out.PasswordHasher;
-import com.securehub.auth.application.port.out.TokenEncryptorPort;
+import com.securehub.auth.application.usecases.user.CreateActivateUserCodeUseCase;
 import com.securehub.auth.application.usecases.user.CreateUserUseCases;
 import com.securehub.auth.application.util.CorrelationId;
-import com.securehub.auth.domain.activationCode.ActivationCode;
-import com.securehub.auth.domain.activationCode.ActivationCodeRepositoryPort;
 import com.securehub.auth.domain.user.User;
 import com.securehub.auth.domain.user.UserDTO;
 import com.securehub.auth.domain.user.UserRepositoryPort;
@@ -15,26 +13,21 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.SecureRandom;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 public class CreateUserServiceImpl implements CreateUserUseCases {
     private static final Logger log = LoggerFactory.getLogger(CreateUserServiceImpl.class);
 
     private final UserRepositoryPort userRepository;
-    private final ActivationCodeRepositoryPort activationCodeRepositoryPort;
     private final UserMapper userMapper;
     private final PasswordHasher passwordHasher;
-    private final TokenEncryptorPort tokenEncryptorPort;
+    private final CreateActivateUserCodeUseCase createActivateUserCodeUseCase;
 
-    public CreateUserServiceImpl(UserRepositoryPort userRepository, ActivationCodeRepositoryPort activationCodeRepositoryPort, UserMapper userMapper, PasswordHasher passwordHasher, TokenEncryptorPort tokenEncryptorPort) {
+    public CreateUserServiceImpl(UserRepositoryPort userRepository, UserMapper userMapper, PasswordHasher passwordHasher, CreateActivateUserCodeUseCase createActivateUserCodeUseCase) {
         this.userRepository = userRepository;
-        this.activationCodeRepositoryPort = activationCodeRepositoryPort;
         this.userMapper = userMapper;
         this.passwordHasher = passwordHasher;
-        this.tokenEncryptorPort = tokenEncryptorPort;
+        this.createActivateUserCodeUseCase = createActivateUserCodeUseCase;
     }
 
     @Override
@@ -48,7 +41,8 @@ public class CreateUserServiceImpl implements CreateUserUseCases {
         user.setPassword(hashedPassword);
 
         User userCreated = userRepository.save(user);
-        createActivationCode(userCreated);
+        createActivateUserCodeUseCase.run(userCreated.getId());
+
         log.info("UserServiceImpl.run - end - correlationId [{}] - email [{}]", correlationId, user.getEmail());
         return userMapper.toDto(userCreated);
     }
@@ -62,37 +56,4 @@ public class CreateUserServiceImpl implements CreateUserUseCases {
         }
         log.debug("UserServiceImpl.validateUserDoesNotExists - end - correlationId [{}] - email [{}]", correlationId, email);
     }
-
-    private void createActivationCode(User userCreated) {
-        String correlationId = CorrelationId.get();
-        log.debug("UserServiceImpl.createActivationCode - start - correlationId [{}] - userId [{}] - email [{}]",
-                correlationId, userCreated.getId(), userCreated.getEmail());
-
-        String code = generateEncryptedCode();
-        Instant expiresAt = Instant.now().plus(15, ChronoUnit.MINUTES);
-        ActivationCode activationCode = new ActivationCode(
-                null,
-                userCreated.getId(),
-                code,
-                expiresAt,
-                null,
-                null
-        );
-
-        activationCodeRepositoryPort.save(activationCode);
-
-        log.debug("UserServiceImpl.createActivationCode - end - correlationId [{}] - userId [{}] - email [{}] code [{}]",
-                correlationId, userCreated.getId(), userCreated.getEmail(), code);
-    }
-
-    private String generateEncryptedCode () {
-        try {
-            SecureRandom random = new SecureRandom();
-            int code = 100000 + random.nextInt(900000);
-
-            return tokenEncryptorPort.encrypt(String.valueOf(code));
-        } catch (Exception e) {
-            throw new BadRequestException("An error occurred while generating the code");
-        }
-    };
 }

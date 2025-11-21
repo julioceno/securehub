@@ -1,8 +1,7 @@
 package com.securehub.auth.application.service.user;
 
-import com.securehub.auth.application.exception.BadRequestException;
 import com.securehub.auth.application.port.out.PasswordHasher;
-import com.securehub.auth.application.port.out.TokenEncryptorPort;
+import com.securehub.auth.application.port.out.SignerPort;
 import com.securehub.auth.application.usecases.user.ResetPasswordUseCase;
 import com.securehub.auth.application.util.CorrelationId;
 import com.securehub.auth.domain.passwordResetToken.PasswordResetToken;
@@ -21,18 +20,18 @@ public class ResetPasswordServiceImpl implements ResetPasswordUseCase {
     private final UserRepositoryPort userRepositoryPort;
     private final PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort;
     private final PasswordHasher passwordHasher;
-    private final TokenEncryptorPort  tokenEncryptorPort;
+    private final SignerPort signerPort;
 
     public ResetPasswordServiceImpl(
             UserRepositoryPort userRepositoryPort,
             PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort,
             PasswordHasher passwordHasher,
-            TokenEncryptorPort  tokenEncryptorPort
+            SignerPort signerPort
     ) {
         this.userRepositoryPort = userRepositoryPort;
         this.passwordResetTokenRepositoryPort = passwordResetTokenRepositoryPort;
         this.passwordHasher = passwordHasher;
-        this.tokenEncryptorPort = tokenEncryptorPort;
+        this.signerPort = signerPort;
     }
 
     @Override
@@ -49,7 +48,7 @@ public class ResetPasswordServiceImpl implements ResetPasswordUseCase {
         if (passwordResetToken == null) {
             return;
         }
-        boolean isValid = tokenEncryptorPort.compare(dto.token(), passwordResetToken.getToken());
+        boolean isValid = signerPort.compare(dto.token(), passwordResetToken.getToken());
         if (!isValid) {
             log.warn("ResetPasswordServiceImpl.run - correlationId [{}] is invalid", correlationId);
             return;

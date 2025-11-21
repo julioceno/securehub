@@ -1,8 +1,8 @@
 package com.securehub.auth.infrastructure.security;
 
-import com.securehub.auth.application.port.out.TokenEncryptorPort;
+import com.securehub.auth.application.port.out.SignerPort;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -12,12 +12,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 
-@Service
-public class TokenEncryptor implements TokenEncryptorPort {
+@Component
+public class HmacSignerAdapter implements SignerPort {
     private static final String ALGORITHM = "HmacSHA256";
     private final String secretKey;
 
-    public TokenEncryptor(
+    public HmacSignerAdapter(
             @Value("${api.encrypt.secret}")
             String secretKey
     ) {

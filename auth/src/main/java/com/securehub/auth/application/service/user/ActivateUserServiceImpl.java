@@ -3,7 +3,7 @@ package com.securehub.auth.application.service.user;
 import com.securehub.auth.application.exception.BadRequestException;
 import com.securehub.auth.application.exception.NotFoundException;
 import com.securehub.auth.application.mapper.UserMapper;
-import com.securehub.auth.application.port.out.TokenEncryptorPort;
+import com.securehub.auth.application.port.out.SignerPort;
 import com.securehub.auth.application.usecases.user.ActivateUserUseCase;
 import com.securehub.auth.application.util.CorrelationId;
 import com.securehub.auth.domain.activationCode.ActivationCode;
@@ -24,13 +24,13 @@ public class ActivateUserServiceImpl implements ActivateUserUseCase {
     private final UserRepositoryPort userRepositoryPort;
     private final ActivationCodeRepositoryPort activationCodeRepositoryPort;
     private final UserMapper userMapper;
-    private final TokenEncryptorPort tokenEncryptorPort;
+    private final SignerPort signerPort;
 
-    public ActivateUserServiceImpl(UserRepositoryPort userRepositoryPort, ActivationCodeRepositoryPort activationCodeRepositoryPort, UserMapper userMapper, TokenEncryptorPort tokenEncryptorPort) {
+    public ActivateUserServiceImpl(UserRepositoryPort userRepositoryPort, ActivationCodeRepositoryPort activationCodeRepositoryPort, UserMapper userMapper, SignerPort signerPort) {
         this.userRepositoryPort = userRepositoryPort;
         this.activationCodeRepositoryPort = activationCodeRepositoryPort;
         this.userMapper = userMapper;
-        this.tokenEncryptorPort = tokenEncryptorPort;
+        this.signerPort = signerPort;
     }
 
     @Override
@@ -107,7 +107,7 @@ public class ActivateUserServiceImpl implements ActivateUserUseCase {
     private void validateActivationCode(String rawCode, String encryptedCode) {
         String correlationId = CorrelationId.get();
         log.debug("ActivateUserServiceImpl.validateActivationCode - start - correlationId [{}]", correlationId);
-        boolean isValid = tokenEncryptorPort.compare(rawCode, encryptedCode);
+        boolean isValid = signerPort.compare(rawCode, encryptedCode);
 
         if (!isValid) {
             log.error("ActivateUserServiceImpl.validateActivationCode - invalid activation code - correlationId [{}]", correlationId);

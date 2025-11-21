@@ -1,7 +1,7 @@
 package com.securehub.auth.application.service.user;
 
 import com.securehub.auth.application.exception.BadRequestException;
-import com.securehub.auth.application.port.out.TokenEncryptorPort;
+import com.securehub.auth.application.port.out.SignerPort;
 import com.securehub.auth.application.usecases.user.CreateActivateUserCodeUseCase;
 import com.securehub.auth.application.util.CorrelationId;
 import com.securehub.auth.domain.activationCode.ActivationCode;
@@ -17,11 +17,11 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
     private static final Logger log = LoggerFactory.getLogger(CreateActivateUserCodeServiceImpl.class);
 
     private final ActivationCodeRepositoryPort activationCodeRepositoryPort;
-    private final TokenEncryptorPort  tokenEncryptorPort;
+    private final SignerPort signerPort;
 
-    public CreateActivateUserCodeServiceImpl(ActivationCodeRepositoryPort activationCodeRepositoryPort, TokenEncryptorPort tokenEncryptorPort) {
+    public CreateActivateUserCodeServiceImpl(ActivationCodeRepositoryPort activationCodeRepositoryPort, SignerPort signerPort) {
         this.activationCodeRepositoryPort = activationCodeRepositoryPort;
-        this.tokenEncryptorPort = tokenEncryptorPort;
+        this.signerPort = signerPort;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
             SecureRandom random = new SecureRandom();
             int code = 100000 + random.nextInt(900000);
 
-            return tokenEncryptorPort.encrypt(String.valueOf(code));
+            return signerPort.encrypt(String.valueOf(code));
         } catch (Exception e) {
             throw new BadRequestException("An error occurred while generating the code");
         }
