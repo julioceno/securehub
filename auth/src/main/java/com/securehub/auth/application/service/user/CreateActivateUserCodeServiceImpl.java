@@ -4,12 +4,12 @@ import com.securehub.auth.application.exception.BadRequestException;
 import com.securehub.auth.application.port.out.SignerPort;
 import com.securehub.auth.application.usecases.user.CreateActivateUserCodeUseCase;
 import com.securehub.auth.application.util.CorrelationId;
+import com.securehub.auth.application.util.GenerateCode;
 import com.securehub.auth.domain.activationCode.ActivationCode;
 import com.securehub.auth.domain.activationCode.ActivationCodeRepositoryPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -66,10 +66,8 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
 
     private String generateEncryptedCode() {
         try {
-            SecureRandom random = new SecureRandom();
-            int code = 100000 + random.nextInt(900000);
-
-            return signerPort.encrypt(String.valueOf(code));
+            String code = GenerateCode.generateCode();
+            return signerPort.encrypt(code);
         } catch (Exception e) {
             throw new BadRequestException("An error occurred while generating the code");
         }

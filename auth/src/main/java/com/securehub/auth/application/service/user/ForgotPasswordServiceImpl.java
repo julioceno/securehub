@@ -4,6 +4,7 @@ import com.securehub.auth.application.exception.BadRequestException;
 import com.securehub.auth.application.port.out.SignerPort;
 import com.securehub.auth.application.usecases.user.ForgotPasswordUseCase;
 import com.securehub.auth.application.util.CorrelationId;
+import com.securehub.auth.application.util.GenerateCode;
 import com.securehub.auth.domain.passwordResetToken.PasswordResetToken;
 import com.securehub.auth.domain.passwordResetToken.PasswordResetTokenRepositoryPort;
 import com.securehub.auth.domain.user.User;
@@ -11,7 +12,6 @@ import com.securehub.auth.domain.user.UserRepositoryPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -76,10 +76,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordUseCase {
         String correlationId = CorrelationId.get();
         log.debug("ForgotPasswordServiceImpl.generateToken - start - correlationId [{}]", correlationId);
         try {
-            SecureRandom random = new SecureRandom();
-            int token = 100000 + random.nextInt(900000);
-
-            String encryptedToken = signerPort.encrypt(String.valueOf(token));
+            String code = GenerateCode.generateCode();
+            String encryptedToken = signerPort.encrypt(code);
             log.debug("ForgotPasswordServiceImpl.generateToken - end - correlationId [{}]", correlationId);
             return encryptedToken;
         } catch(Exception ex) {
