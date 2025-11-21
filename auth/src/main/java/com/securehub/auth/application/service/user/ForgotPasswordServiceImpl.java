@@ -63,8 +63,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordUseCase {
         String correlationId = CorrelationId.get();
         log.debug("ForgotPasswordServiceImpl.invalidateOldTokenIfExists - start - correlationId [{}]", correlationId);
 
-        Optional<PasswordResetToken> passwordResetToken = passwordResetTokenRepositoryPort.findByUserIdAndConfirmedAtIsNullAndDeletedAtIsNull(userId);
-        passwordResetToken.ifPresent(passwordResetTokenEntity -> {
+        passwordResetTokenRepositoryPort.findByUserIdAndConfirmedAtIsNullAndDeletedAtIsNull(userId).ifPresent(passwordResetTokenEntity -> {
             log.debug("ForgotPasswordServiceImpl.invalidateOldTokenIfExists - set deleted date in password reset token - correlationId [{}] - passwordResetTokenId [{}] ", correlationId, passwordResetTokenEntity.getId());
             passwordResetTokenEntity.setDeletedAt(Instant.now());
             passwordResetTokenRepositoryPort.save(passwordResetTokenEntity);
