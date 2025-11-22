@@ -23,6 +23,7 @@ services:
       image: confluentinc/cp-kafka:7.4.4
       depends_on:
         - zookeeper
+      restart: unless-stopped
       ports:
         - 29092:29092
       environment:
