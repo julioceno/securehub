@@ -1,5 +1,6 @@
 package com.securehub.mailsender.adapter.in;
 
+import com.securehub.mailsender.application.usecases.SendMailUseCase;
 import com.securehub.mailsender.application.util.CorrelationId;
 import com.securehub.mailsender.domain.EmailMessage;
 import org.slf4j.MDC;
@@ -13,9 +14,11 @@ import tools.jackson.databind.ObjectMapper;
 public class EmailConsumer {
 
     private final ObjectMapper objectMapper;
+    private final SendMailUseCase sendMailUseCase;
 
-    public EmailConsumer(ObjectMapper objectMapper) {
+    public EmailConsumer(ObjectMapper objectMapper, SendMailUseCase sendMailUseCase) {
         this.objectMapper = objectMapper;
+        this.sendMailUseCase = sendMailUseCase;
     }
 
     // TODO: get configuration from application.yaml
@@ -27,7 +30,7 @@ public class EmailConsumer {
         try {
             MDC.put(CorrelationId.HEADER_NAME, correlationId);
             EmailMessage email = objectMapper.readValue(emailMessage, EmailMessage.class);
-
+            sendMailUseCase.run(email);
             IO.println("Mensagem" + correlationId);
         } finally {
             MDC.clear();

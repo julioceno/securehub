@@ -1,12 +1,14 @@
 spring:
   application:
     name: mailsender
-
-  kafka:
-    bootstrap-servers: localhost:29092
-
-    consumer:
-      group-id: mail-sender-group
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  mail:
+    host: ${MAIL_HOST:sandbox.smtp.mailtrap.io}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
