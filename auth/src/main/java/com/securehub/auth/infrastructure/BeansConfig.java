@@ -1,6 +1,7 @@
 package com.securehub.auth.infrastructure;
 
 import com.securehub.auth.application.mapper.UserMapper;
+import com.securehub.auth.application.port.out.EmailSenderPort;
 import com.securehub.auth.application.port.out.PasswordHasher;
 import com.securehub.auth.application.port.out.SignerPort;
 import com.securehub.auth.application.port.out.TokenProviderPort;
@@ -48,8 +49,12 @@ public class BeansConfig {
     }
 
     @Bean
-    public CreateActivateUserCodeUseCase createPasswordResetTokenUseCase(ActivationCodeRepositoryPort activationCodeRepositoryPort, SignerPort signerPort) {
-        return new CreateActivateUserCodeServiceImpl(activationCodeRepositoryPort, signerPort);
+    public CreateActivateUserCodeUseCase createPasswordResetTokenUseCase(
+            ActivationCodeRepositoryPort activationCodeRepositoryPort,
+            SignerPort signerPort,
+            EmailSenderPort eventPublisherPort
+    ) {
+        return new CreateActivateUserCodeServiceImpl(activationCodeRepositoryPort, signerPort, eventPublisherPort);
     }
 
     @Bean
