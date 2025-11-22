@@ -76,13 +76,13 @@ public class AuthenticateUserService implements AuthenticateUserUseCase {
         ActivationCode activationCode = activationCodeRepositoryPort.findByUserIdAndConfirmedAtIsNullAndDeletedAtIsNull(user.getId()).orElse(null);
         if (activationCode == null) {
             log.debug("AuthenticateUserService.shouldSendActivationCode - code not exists - correlationId [{}] - id [{}] - email [{}]", correlationId, user.getId(), user.getEmail());
-            createActivateUserCodeUseCase.run(user.getId());
+            createActivateUserCodeUseCase.run(user);
             return;
         }
 
         if (activationCode.getExpiresAt().isBefore(Instant.now())) {
             log.debug("AuthenticateUserService.shouldSendActivationCode - is expired - correlationId [{}] - id [{}] - email [{}]", correlationId, user.getId(), user.getEmail());
-            createActivateUserCodeUseCase.run(user.getId());
+            createActivateUserCodeUseCase.run(user);
             return;
         }
 

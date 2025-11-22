@@ -41,7 +41,7 @@ public class CreateUserServiceImpl implements CreateUserUseCases {
         user.setPassword(hashedPassword);
 
         User userCreated = userRepository.save(user);
-        createActivateUserCodeUseCase.run(userCreated.getId());
+        createActivateUserCodeUseCase.run(userCreated);
 
         log.info("UserServiceImpl.run - end - correlationId [{}] - email [{}]", correlationId, user.getEmail());
         return userMapper.toDto(userCreated);

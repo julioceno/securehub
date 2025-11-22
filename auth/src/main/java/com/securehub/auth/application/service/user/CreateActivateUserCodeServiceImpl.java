@@ -9,6 +9,7 @@ import com.securehub.auth.application.util.GenerateCode;
 import com.securehub.auth.domain.activationCode.ActivationCode;
 import com.securehub.auth.domain.activationCode.ActivationCodeRepositoryPort;
 import com.securehub.auth.domain.email.EmailMessage;
+import com.securehub.auth.domain.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,19 +36,20 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
     }
 
     @Override
-    public void run(String userId) {
+    public void run(User user) {
         String correlationId = CorrelationId.get();
         log.debug("CreateActivateUserCodeServiceImpl.run - start - correlationId [{}] - userId [{}]",
-                correlationId, userId);
+                correlationId, user.getId());
 
-        invalidateOldCodeIfExists(userId);
+        invalidateOldCodeIfExists(user.getId());
 
-        String code = generateEncryptedCode();
+        String rawCode = GenerateCode.generateCode();
+        String code = generateEncryptedCode(rawCode);
         Instant expiresAt = Instant.now().plus(15, ChronoUnit.MINUTES);
 
         ActivationCode activationCode = new ActivationCode(
                 null,
-                userId,
+                user.getId(),
                 code,
                 expiresAt,
                 null,
@@ -56,8 +58,9 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
 
         activationCodeRepositoryPort.save(activationCode);
 
+        sendMail(user, code);
         log.debug("CreateActivateUserCodeServiceImpl.run - end - correlationId [{}] - userId [{}] ",
-                correlationId, userId);
+                correlationId, user.getId());
     }
 
     private void invalidateOldCodeIfExists(String userId) {
@@ -74,22 +77,26 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
         log.debug("CreateActivateUserCodeServiceImpl.invalidateOldCodeIfExists - end - correlationId [{}]", correlationId);
     }
 
-    private String generateEncryptedCode() {
+    private String generateEncryptedCode(String rawCode) {
         try {
-            String code = GenerateCode.generateCode();
-
-            EmailMessage emailMessage = new EmailMessage(
-                    "email@gmail.com",
-                    "template",
-                    Map.of(
-                            "username", "username",
-                            "code", code
-                    )
-            );
-            eventPublisherPort.send(emailMessage);
-            return signerPort.encrypt(code);
+            return signerPort.encrypt(rawCode);
         } catch (Exception e) {
             throw new BadRequestException("An error occurred while generating the code");
         }
     };
+
+    private void sendMail(User user, String rawCode) {
+        String correlationId = CorrelationId.get();
+        log.debug("CreateActivateUserCodeServiceImpl.sendMail - start - correlationId [{}]",  correlationId);
+        EmailMessage emailMessage = new EmailMessage(
+                user.getEmail(),
+                "template", // TODO: change
+                Map.of(
+                        "username", user.getUsername(),
+                        "code", rawCode
+                )
+        );
+        eventPublisherPort.send(emailMessage);
+        log.debug("CreateActivateUserCodeServiceImpl.sendMail - end - correlationId [{}]",  correlationId);
+    }
 }
