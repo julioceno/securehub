@@ -4,11 +4,8 @@ import com.securehub.mailsender.application.port.out.EmailTemplatePort;
 import com.securehub.mailsender.application.port.out.MailSenderPort;
 import com.securehub.mailsender.application.usecases.SendMailUseCase;
 import com.securehub.mailsender.domain.EmailMessage;
-import org.springframework.stereotype.Service;
 
-// TODO: remove decorator
 // TODO: add logs
-@Service
 public class SendMailUseCaseImpl implements SendMailUseCase {
     private final MailSenderPort mailSender;
     private final EmailTemplatePort templatePort;

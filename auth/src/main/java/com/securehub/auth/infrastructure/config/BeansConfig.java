@@ -1,4 +1,4 @@
-package com.securehub.auth.infrastructure;
+package com.securehub.auth.infrastructure.config;
 
 import com.securehub.auth.application.mapper.UserMapper;
 import com.securehub.auth.application.port.out.EmailSenderPort;
