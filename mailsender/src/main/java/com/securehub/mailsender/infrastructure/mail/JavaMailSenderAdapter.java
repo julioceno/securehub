@@ -2,17 +2,15 @@ package com.securehub.mailsender.infrastructure.mail;
 
 import com.securehub.mailsender.application.port.out.MailSenderPort;
 import com.securehub.mailsender.application.util.CorrelationId;
-import com.securehub.mailsender.infrastructure.template.ThymeleafEmailTemplateAdapter;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-// TODO: change name
-@Component
+@Service
 @AllArgsConstructor
 public class JavaMailSenderAdapter implements MailSenderPort {
     private static final Logger log = LoggerFactory.getLogger(JavaMailSenderAdapter.class);

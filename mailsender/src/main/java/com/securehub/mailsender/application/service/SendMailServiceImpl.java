@@ -24,6 +24,8 @@ public class SendMailServiceImpl implements SendMailUseCase {
         String correlationId = CorrelationId.get();
         log.info("SendMailServiceImpl.run - start - correlationId [{}]", correlationId);
         String body = templatePort.processTemplate(emailMessage.getTemplate(), emailMessage.getParams());
+
+        // TODO: change subject
         mailSender.send(emailMessage.getTo(), "subject elaborado", body);
         log.info("SendMailServiceImpl.run - end - correlationId [{}]", correlationId);
     }
