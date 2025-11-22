@@ -26,7 +26,7 @@ public class KafkaEmailProducer implements EmailSenderPort {
         try {
             String payload = mapper.writeValueAsString(emailMessage);
             Message<String> message = MessageBuilder.withPayload(payload)
-                    .setHeader(KafkaHeaders.TOPIC, "mail")
+                    .setHeader(KafkaHeaders.TOPIC, "email-topic")
                     .setHeader(CorrelationId.HEADER_NAME, CorrelationId.get())
                     .build();
 
