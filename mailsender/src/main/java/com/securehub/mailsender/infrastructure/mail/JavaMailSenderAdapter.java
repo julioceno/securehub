@@ -1,9 +1,10 @@
 package com.securehub.mailsender.infrastructure.mail;
 
 import com.securehub.mailsender.application.port.out.MailSenderPort;
+import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 // TODO: change name
@@ -14,10 +15,20 @@ public class JavaMailSenderAdapter implements MailSenderPort {
 
     @Override
     public void send(String to, String subject, String body) {
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo(to);
-        msg.setText(body);
-        msg.setSubject(subject);
-        mailSender.send(msg);
+        try {
+            MimeMessage msg = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+
+            // TODO: change from
+            helper.setFrom("noreply@gmail.com");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(body, true);
+            mailSender.send(msg);
+        } catch (Exception e) {
+
+            throw new RuntimeException(e);
+        }
+
     }
 }
