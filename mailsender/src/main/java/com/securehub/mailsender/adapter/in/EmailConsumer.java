@@ -18,7 +18,11 @@ public class EmailConsumer {
     private final SendMailUseCase sendMailUseCase;
 
     // TODO: get configuration from application.yaml
-    @KafkaListener(topics = "email-topic", groupId = "mail-sender-group")
+    @KafkaListener(
+            topics = "email-topic",
+            groupId = "mail-sender-group",
+            concurrency = "3"
+    )
     public void listen(
             @Payload String emailMessage,
             @Header(CorrelationId.HEADER_NAME) String correlationId
