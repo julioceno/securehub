@@ -1,10 +1,11 @@
 package com.securehub.auth.adapters.in.controller;
 
 import com.securehub.auth.adapters.in.dto.SignInDTO;
-import com.securehub.auth.application.dto.AuthRequest;
+import com.securehub.auth.application.dto.AuthRequestDTO;
 import com.securehub.auth.application.dto.AuthResponse;
 import com.securehub.auth.application.usecases.auth.AuthenticateUserUseCase;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +15,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/v1/auth")
 public class AuthController {
     private final AuthenticateUserUseCase authenticateUserUseCase;
+    private final HttpServletRequest request;
     private final HttpServletResponse httpResponse;
 
-    public AuthController(AuthenticateUserUseCase authenticateUserUseCase, HttpServletResponse httpResponse) {
+    public AuthController(AuthenticateUserUseCase authenticateUserUseCase, HttpServletRequest request, HttpServletResponse httpResponse) {
         this.authenticateUserUseCase = authenticateUserUseCase;
+        this.request = request;
         this.httpResponse = httpResponse;
     }
 
@@ -25,8 +28,12 @@ public class AuthController {
     public ResponseEntity createUser(
             @Valid @RequestBody SignInDTO body
     ) {
-        AuthRequest authRequest = new AuthRequest(body.email(), body.password());
-        AuthResponse authResponse = authenticateUserUseCase.authenticate(authRequest);
+        String baseUrl = request.getRequestURL()
+                .toString()
+                .replace(request.getRequestURI(), "");
+
+        AuthRequestDTO authRequest = new AuthRequestDTO(body.email(), body.password(), baseUrl);
+        AuthResponse authResponse = authenticateUserUseCase.run(authRequest);
 
         Cookie cookie = new Cookie("token", authResponse.token());
         cookie.setSecure(true);

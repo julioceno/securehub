@@ -6,6 +6,7 @@ import com.securehub.auth.adapters.in.dto.ResetPasswordDTO;
 import com.securehub.auth.adapters.in.dto.UserToCreateDTO;
 import com.securehub.auth.domain.passwordResetToken.RequestPasswordResetTokenDTO;
 import com.securehub.auth.domain.user.User;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import com.securehub.auth.application.usecases.user.UserUseCases;
 import com.securehub.auth.domain.user.UserDTO;
@@ -19,9 +20,11 @@ import java.net.URI;
 @RequestMapping("v1/users")
 public class UsersController {
     private final UserUseCases userUseCases;
+    private final HttpServletRequest request;
 
-    public UsersController(UserUseCases userUseCases) {
+    public UsersController(UserUseCases userUseCases, HttpServletRequest request) {
         this.userUseCases = userUseCases;
+        this.request = request;
     }
 
     @PostMapping()
@@ -35,7 +38,11 @@ public class UsersController {
                 body.getPassword(),
                 false
         );
-        UserDTO userDTO = userUseCases.createUser(user);
+        String baseUrl = request.getRequestURL()
+                .toString()
+                .replace(request.getRequestURI(), "");
+
+        UserDTO userDTO = userUseCases.createUser(user, baseUrl);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")

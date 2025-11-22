@@ -6,7 +6,7 @@ import com.securehub.auth.domain.user.UserDTO;
 
 public interface UserUseCases {
 
-    UserDTO createUser(User user);
+    UserDTO createUser(User user, String baseUrl);
 
     void enableUser(String email, String code);
 
