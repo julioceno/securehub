@@ -7,6 +7,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 @Service
 public class SendMailUseCaseImpl implements SendMailUseCase {
@@ -18,18 +19,31 @@ public class SendMailUseCaseImpl implements SendMailUseCase {
 
     @Override
     public void run(EmailMessage emailMessage) {
-        String template = loadTemplate();
+        String template = loadTemplate(emailMessage.getTemplate());
+        String processedTemplate = processTemplate(template, emailMessage.getParams());
 
-        mailSender.send(emailMessage.getTo(), "subject elaborado", template);
+        processTemplate(template, emailMessage.getParams());
+        mailSender.send(emailMessage.getTo(), "subject elaborado", processedTemplate);
     }
 
-    // TODO: this implementation isn't thread safe
-    public String loadTemplate() {
+    public String loadTemplate(String templateName) {
         try {
-            ClassPathResource resource = new ClassPathResource("templates/account-activation.html");
+            String templatePath = "templates/" + templateName + ".html";
+            ClassPathResource resource = new ClassPathResource(templatePath);
             return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
+    private String processTemplate(String template, Map<String, Object> params) {
+        String result = template;
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            String key = "{{" + entry.getKey() + "}}";
+            String value = entry.getValue() != null ? entry.getValue().toString() : "";
+            result = result.replace(key, value);
+        }
+        return result;
+    }
+
 }

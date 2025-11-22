@@ -19,6 +19,7 @@ import java.util.Map;
 
 public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCodeUseCase {
     private static final Logger log = LoggerFactory.getLogger(CreateActivateUserCodeServiceImpl.class);
+    private static final String templateName = "account-activation";
 
     private final ActivationCodeRepositoryPort activationCodeRepositoryPort;
     private final SignerPort signerPort;
@@ -44,7 +45,6 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
         invalidateOldCodeIfExists(user.getId());
 
         String rawCode = GenerateCode.generateCode();
-        String url = generateUrl(baseUrl, user.getId(), rawCode);
         String code = generateEncryptedCode(rawCode);
         Instant expiresAt = Instant.now().plus(15, ChronoUnit.MINUTES);
 
@@ -59,7 +59,7 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
 
         activationCodeRepositoryPort.save(activationCode);
 
-        sendMail(user, url);
+        sendMail(user, rawCode);
         log.debug("CreateActivateUserCodeServiceImpl.run - end - correlationId [{}] - userId [{}] ",
                 correlationId, user.getId());
     }
@@ -86,23 +86,16 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
         }
     };
 
-    private String generateUrl(String baseUrl, String userId, String rawCode) {
-        String correlationId = CorrelationId.get();
-        log.debug("CreateActivateUserCodeServiceImpl.generateUrl - start - correlationId [{}] - baseUrl [{}]", correlationId, baseUrl);
-        String url = String.format("%s/users/%s/enable/%s", baseUrl, userId, rawCode);
-        log.debug("CreateActivateUserCodeServiceImpl.generateUrl - end - correlationId [{}] - baseUrl [{}]", correlationId, baseUrl);
-        return url;
-    }
 
-    private void sendMail(User user, String url) {
+    private void sendMail(User user, String rawCode) {
         String correlationId = CorrelationId.get();
         log.debug("CreateActivateUserCodeServiceImpl.sendMail - start - correlationId [{}]",  correlationId);
         EmailMessage emailMessage = new EmailMessage(
                 user.getEmail(),
-                "template", // TODO: change
+                templateName,
                 Map.of(
                         "username", user.getUsername(),
-                        "url", url
+                        "code", rawCode
                 )
         );
         eventPublisherPort.send(emailMessage);
