@@ -100,14 +100,14 @@
         <div class="content-padding">
 
             <p class="greeting">
-                Olá, <strong>{{username}}</strong>
+                Olá, <strong th:text="${username}" />
             </p>
             Obrigado por se cadastrar! Para garantir a segurança dos seus dados e ativar sua conta, por favor, insira o código de verificação abaixo na plataforma
             </p>
 
             <div class="code-container">
                 <p class="code-label">Seu código de ativação</p>
-                <div class="activation-code">{{code}}</div>
+                <div class="activation-code" th:text="${code}" />
             </div>
             <p> Este código é válido por apenas <strong>15 minutos.</strong> <br/> Se você não realizou este cadastro, não se preocupe, basta ignorar esta mensagem.</p>
 
