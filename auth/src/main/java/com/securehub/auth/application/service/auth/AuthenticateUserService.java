@@ -69,26 +69,24 @@ public class AuthenticateUserService implements AuthenticateUserUseCase {
         return new AuthResponse(token);
     }
 
-    // TODO: enhance method logic for call createActivateUserCodeUseCase in a single place
     private void shouldSendActivationCode(User user) {
         String correlationId = CorrelationId.get();
-        log.debug("AuthenticateUserService.shouldSendActivationCode - start - correlationId [{}] - id [{}] - email [{}]", correlationId, user.getId(), user.getEmail());
+        log.debug("AuthenticateUserService.shouldSendActivationCode - start - correlationId [{}] - id [{}] - email [{}]",
+                correlationId, user.getId(), user.getEmail());
 
-        ActivationCode activationCode = activationCodeRepositoryPort.findByUserIdAndConfirmedAtIsNullAndDeletedAtIsNull(user.getId()).orElse(null);
-        if (activationCode == null) {
-            log.debug("AuthenticateUserService.shouldSendActivationCode - code not exists - correlationId [{}] - id [{}] - email [{}]", correlationId, user.getId(), user.getEmail());
+        ActivationCode code = activationCodeRepositoryPort
+                .findByUserIdAndConfirmedAtIsNullAndDeletedAtIsNull(user.getId())
+                .orElse(null);
+
+        boolean shouldCreateNewCode = code == null || code.getExpiresAt().isBefore(Instant.now());
+
+        if (shouldCreateNewCode) {
+            log.debug("AuthenticateUserService.shouldSendActivationCode - creating new code - correlationId [{}] - id [{}] - email [{}]",
+                    correlationId, user.getId(), user.getEmail());
             createActivateUserCodeUseCase.run(user);
-            return;
         }
 
-        if (activationCode.getExpiresAt().isBefore(Instant.now())) {
-            log.debug("AuthenticateUserService.shouldSendActivationCode - is expired - correlationId [{}] - id [{}] - email [{}]", correlationId, user.getId(), user.getEmail());
-            createActivateUserCodeUseCase.run(user);
-            return;
-        }
-
-        log.debug("AuthenticateUserService.shouldSendActivationCode - end - correlationId [{}] - id [{}] - email [{}]", correlationId, user.getId(), user.getEmail());
+        log.debug("AuthenticateUserService.shouldSendActivationCode - end - correlationId [{}] - id [{}] - email [{}]",
+                correlationId, user.getId(), user.getEmail());
     }
-
-
 }
