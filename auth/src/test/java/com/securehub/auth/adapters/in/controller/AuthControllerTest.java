@@ -1,10 +1,9 @@
 package com.securehub.auth.adapters.in.controller;
 
-import com.securehub.auth.adapters.in.dto.SignInDTO;
-import com.securehub.auth.application.dto.AuthRequestDTO;
+import com.securehub.auth.adapters.in.dto.SignInRequestDTO;
+import com.securehub.auth.application.dto.SignInDTO;
 import com.securehub.auth.application.dto.AuthResponse;
 import com.securehub.auth.application.usecases.auth.AuthenticateUserUseCase;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,22 +35,17 @@ class AuthControllerTest {
 
     @BeforeEach
     void setUp() {
-        authController = new AuthController(authenticateUserUseCase, request, httpResponse);
+        authController = new AuthController(authenticateUserUseCase, httpResponse);
     }
 
     @Test
-    void createUser_ShouldReturnNoContent_WhenAuthenticationIsSuccessful() {
-        SignInDTO signInDTO = new SignInDTO("test@email.com", "password123");
-        String requestURL = "http://localhost:8080/v1/auth";
-        String requestURI = "/v1/auth";
-        String baseUrl = "http://localhost:8080";
+    void createUser_ShouldReturnNoContent_When_AuthenticationIsSuccessful() {
+        SignInRequestDTO signInDTO = new SignInRequestDTO("test@email.com", "password123");
         String token = "jwt-token-123";
 
         AuthResponse authResponse = new AuthResponse(token);
 
-        when(request.getRequestURL()).thenReturn(new StringBuffer(requestURL));
-        when(request.getRequestURI()).thenReturn(requestURI);
-        when(authenticateUserUseCase.run(any(AuthRequestDTO.class))).thenReturn(authResponse);
+        when(authenticateUserUseCase.run(any(SignInDTO.class))).thenReturn(authResponse);
 
         var response = authController.createUser(signInDTO);
 

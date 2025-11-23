@@ -1,6 +1,6 @@
 package com.securehub.auth.application.service.auth;
 
-import com.securehub.auth.application.dto.AuthRequestDTO;
+import com.securehub.auth.application.dto.SignInDTO;
 import com.securehub.auth.application.dto.AuthResponse;
 import com.securehub.auth.application.exception.UnauthorizedException;
 import com.securehub.auth.application.port.out.PasswordHasher;
@@ -41,7 +41,7 @@ public class AuthenticateUserService implements AuthenticateUserUseCase {
     }
 
     @Override
-    public AuthResponse run(AuthRequestDTO dto) {
+    public AuthResponse run(SignInDTO dto) {
         String correlationId = CorrelationId.get();
         log.info("AuthenticateUserService.run - start - correlationId [{}] - email [{}]", correlationId, dto.email());
 

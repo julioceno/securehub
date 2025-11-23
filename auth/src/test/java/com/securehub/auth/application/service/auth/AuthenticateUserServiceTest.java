@@ -1,6 +1,6 @@
 package com.securehub.auth.application.service.auth;
 
-import com.securehub.auth.application.dto.AuthRequestDTO;
+import com.securehub.auth.application.dto.SignInDTO;
 import com.securehub.auth.application.dto.AuthResponse;
 import com.securehub.auth.application.exception.UnauthorizedException;
 import com.securehub.auth.application.port.out.PasswordHasher;
@@ -59,7 +59,7 @@ class AuthenticateUserServiceTest {
         String email = "user@example.com";
         String password = "password123";
         String token = "jwt-token";
-        AuthRequestDTO authRequest = new AuthRequestDTO(email, password);
+        SignInDTO authRequest = new SignInDTO(email, password);
 
         User user = createEnabledUser(id, email);
 
@@ -80,7 +80,7 @@ class AuthenticateUserServiceTest {
     void shouldThrowUnauthorizedException_When_UserNotFound() {
         String email = "nonexistent@example.com";
         String password = "password123";
-        AuthRequestDTO authRequest = new AuthRequestDTO(email, password);
+        SignInDTO authRequest = new SignInDTO(email, password);
 
         when(userRepositoryPort.findByEmail(email)).thenReturn(Optional.empty());
 
@@ -99,7 +99,7 @@ class AuthenticateUserServiceTest {
         String id = "9774360b-f32d-4a29-9e4d-8f0f4fb662b3";
         String email = "user@example.com";
         String password = "wrongPassword";
-        AuthRequestDTO authRequest = new AuthRequestDTO(email, password);
+        SignInDTO authRequest = new SignInDTO(email, password);
 
         User user = createEnabledUser(id, email);
 
@@ -122,7 +122,7 @@ class AuthenticateUserServiceTest {
         String id = "9774360b-f32d-4a29-9e4d-8f0f4fb662b3";
         String email = "user@example.com";
         String password = "password123";
-        AuthRequestDTO authRequest = new AuthRequestDTO(email, password);
+        SignInDTO authRequest = new SignInDTO(email, password);
 
         User user = createDisabledUser(id, email);
 
@@ -145,7 +145,7 @@ class AuthenticateUserServiceTest {
         String id = "9774360b-f32d-4a29-9e4d-8f0f4fb662b3";
         String email = "user@example.com";
         String password = "password123";
-        AuthRequestDTO authRequest = new AuthRequestDTO(email, password);
+        SignInDTO authRequest = new SignInDTO(email, password);
 
         User user = createDisabledUser(id, email);
         ActivationCode expiredCode = createActivationCode(Instant.now().minusSeconds(3600));
@@ -169,7 +169,7 @@ class AuthenticateUserServiceTest {
         String id = "9774360b-f32d-4a29-9e4d-8f0f4fb662b3";
         String email = "user@example.com";
         String password = "password123";
-        AuthRequestDTO authRequest = new AuthRequestDTO(email, password);
+        SignInDTO authRequest = new SignInDTO(email, password);
 
         User user = createDisabledUser(id, email);
         ActivationCode validCode = createActivationCode(Instant.now().plusSeconds(3600));
