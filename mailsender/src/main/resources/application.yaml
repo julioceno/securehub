@@ -9,10 +9,18 @@ spring:
     password: ${MAIL_PASSWORD}
     properties:
       mail:
+        from:
+          email: noreply@securehub.com
+          name: SecureHub
         smtp:
           auth: true
           starttls:
             enable: true
+
+mail:
+  from:
+    email: noreply@securehub.com
+    name: SecureHub
 
 logging:
   level:

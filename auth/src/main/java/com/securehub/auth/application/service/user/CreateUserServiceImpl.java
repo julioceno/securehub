@@ -39,6 +39,7 @@ public class CreateUserServiceImpl implements CreateUserUseCases {
 
         String hashedPassword = passwordHasher.hash(user.getPassword());
         user.setPassword(hashedPassword);
+        user.setEnabled(false);
 
         User userCreated = userRepository.save(user);
         createActivateUserCodeUseCase.run(userCreated);

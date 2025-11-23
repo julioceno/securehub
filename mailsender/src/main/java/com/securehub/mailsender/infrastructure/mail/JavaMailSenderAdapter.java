@@ -3,7 +3,7 @@ package com.securehub.mailsender.infrastructure.mail;
 import com.securehub.mailsender.application.port.out.MailSenderPort;
 import com.securehub.mailsender.application.util.CorrelationId;
 import jakarta.mail.internet.MimeMessage;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -11,11 +11,12 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class JavaMailSenderAdapter implements MailSenderPort {
     private static final Logger log = LoggerFactory.getLogger(JavaMailSenderAdapter.class);
 
     private final JavaMailSender mailSender;
+    private final MailFromProperties mailFromProperties;
 
     @Override
     public void send(String to, String subject, String body) {
@@ -26,8 +27,7 @@ public class JavaMailSenderAdapter implements MailSenderPort {
             MimeMessage msg = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 
-            // TODO: change email from
-            helper.setFrom("noreply@gmail.com");
+            helper.setFrom(mailFromProperties.getEmail(), mailFromProperties.getName());
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(body, true);
