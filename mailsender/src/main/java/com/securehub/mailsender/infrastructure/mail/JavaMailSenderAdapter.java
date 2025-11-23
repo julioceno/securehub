@@ -26,6 +26,7 @@ public class JavaMailSenderAdapter implements MailSenderPort {
             MimeMessage msg = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 
+            // TODO: change email from
             helper.setFrom("noreply@gmail.com");
             helper.setTo(to);
             helper.setSubject(subject);
