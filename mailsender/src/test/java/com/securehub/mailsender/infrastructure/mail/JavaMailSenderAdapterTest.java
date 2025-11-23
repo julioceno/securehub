@@ -26,6 +26,9 @@ class JavaMailSenderAdapterTest {
     @Mock
     private MimeMessage mimeMessage;
 
+    @Mock
+    private MailFromProperties mailFromProperties;
+
     @InjectMocks
     private JavaMailSenderAdapter adapter;
 
@@ -34,6 +37,8 @@ class JavaMailSenderAdapterTest {
     @BeforeEach
     void setUp() {
         correlationIdMock = mockStatic(CorrelationId.class);
+        lenient().when(mailFromProperties.getEmail()).thenReturn("sender@example.com");
+        lenient().when(mailFromProperties.getName()).thenReturn("Sender Name");
     }
 
     @AfterEach
