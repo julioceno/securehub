@@ -1,10 +1,12 @@
 package com.securehub.auth.application.service.user;
 
 import com.securehub.auth.application.exception.BadRequestException;
+import com.securehub.auth.application.port.out.EmailSenderPort;
 import com.securehub.auth.application.port.out.SignerPort;
 import com.securehub.auth.application.usecases.user.ForgotPasswordUseCase;
 import com.securehub.auth.application.util.CorrelationId;
 import com.securehub.auth.application.util.GenerateCode;
+import com.securehub.auth.domain.email.EmailMessage;
 import com.securehub.auth.domain.passwordResetToken.PasswordResetToken;
 import com.securehub.auth.domain.passwordResetToken.PasswordResetTokenRepositoryPort;
 import com.securehub.auth.domain.user.User;
@@ -14,22 +16,28 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 
 public class ForgotPasswordServiceImpl implements ForgotPasswordUseCase {
     private static final Logger log = LoggerFactory.getLogger(ForgotPasswordServiceImpl.class);
+    private static final String templateName = "reset-password";
+    private static final String emailSubject = "Resetar senha - Código de verificação";
 
     private final UserRepositoryPort userRepositoryPort;
     private final PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort;
     private final SignerPort signerPort;
+    private final EmailSenderPort eventPublisherPort;
 
     public ForgotPasswordServiceImpl(
             UserRepositoryPort userRepositoryPort,
             PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort,
-            SignerPort signerPort
+            SignerPort signerPort,
+            EmailSenderPort eventPublisherPort
     ) {
         this.userRepositoryPort = userRepositoryPort;
         this.passwordResetTokenRepositoryPort = passwordResetTokenRepositoryPort;
         this.signerPort = signerPort;
+        this.eventPublisherPort = eventPublisherPort;
     }
 
     @Override
@@ -56,7 +64,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordUseCase {
         );
 
         passwordResetTokenRepositoryPort.save(passwordResetToken);
-
+        sendMail(user, rawCode);
         log.info("ForgotPasswordServiceImpl.run - end - correlationId [{}] - userId [{}] - email [{}] token [{}]",
                 correlationId, user.getId(), user.getEmail(), token);
     }
@@ -85,5 +93,21 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordUseCase {
             log.error("ForgotPasswordServiceImpl.generateEncryptedCode - an error occurred while encrypting the token - correlationId [{}]", correlationId);
             throw new BadRequestException("An error occurred while encrypting the token");
         }
+    }
+
+    private void sendMail(User user, String rawCode) {
+        String correlationId = CorrelationId.get();
+        log.debug("CreateActivateUserCodeServiceImpl.sendMail - start - correlationId [{}]",  correlationId);
+        EmailMessage emailMessage = new EmailMessage(
+                user.getEmail(),
+                emailSubject,
+                templateName,
+                Map.of(
+                        "username", user.getUsername(),
+                        "code", rawCode
+                )
+        );
+        eventPublisherPort.send(emailMessage);
+        log.debug("CreateActivateUserCodeServiceImpl.sendMail - end - correlationId [{}]",  correlationId);
     }
 }

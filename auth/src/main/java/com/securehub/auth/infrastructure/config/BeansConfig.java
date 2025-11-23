@@ -61,9 +61,15 @@ public class BeansConfig {
     public ForgotPasswordUseCase forgotPasswordUseCase(
             UserRepositoryPort userRepositoryPort,
             PasswordResetTokenRepositoryPort passwordResetTokenRepositoryPort,
-            SignerPort signerPort
+            SignerPort signerPort,
+            EmailSenderPort eventPublisherPort
     ) {
-        return new ForgotPasswordServiceImpl(userRepositoryPort, passwordResetTokenRepositoryPort, signerPort);
+        return new ForgotPasswordServiceImpl(
+                userRepositoryPort,
+                passwordResetTokenRepositoryPort,
+                signerPort,
+                eventPublisherPort
+        );
     }
 
     @Bean
