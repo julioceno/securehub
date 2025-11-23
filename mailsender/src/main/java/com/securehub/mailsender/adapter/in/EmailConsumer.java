@@ -20,8 +20,7 @@ public class EmailConsumer {
     // TODO: get configuration from application.yaml
     @KafkaListener(
             topics = "email-topic",
-            groupId = "mail-sender-group",
-            concurrency = "3"
+            groupId = "mail-sender-group"
     )
     public void listen(
             @Payload String emailMessage,
