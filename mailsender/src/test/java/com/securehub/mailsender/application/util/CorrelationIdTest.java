@@ -1,4 +1,4 @@
-package com.securehub.auth.application.util;
+package com.securehub.mailsender.application.util;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
