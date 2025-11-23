@@ -54,7 +54,7 @@ class CreateUserServiceImplTest {
         verify(passwordHasher).hash("password");
         verify(userEntity).setPassword("passwordHashed");
         verify(userRepository).save(userEntity);
-        verify(createActivateUserCodeUseCase).run("Id");
+        verify(createActivateUserCodeUseCase).run(savedUser);
         assertEquals(expectedDto, result);
     }
 
@@ -72,6 +72,6 @@ class CreateUserServiceImplTest {
         verify(userRepository, never()).save(any());
         verify(passwordHasher, never()).hash(anyString());
         verify(userMapper, never()).toDto(any());
-        verify(createActivateUserCodeUseCase, never()).run(anyString());
+        verify(createActivateUserCodeUseCase, never()).run(any(User.class));
     }
 }

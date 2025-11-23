@@ -38,11 +38,8 @@ public class UsersController {
                 body.getPassword(),
                 false
         );
-        String baseUrl = request.getRequestURL()
-                .toString()
-                .replace(request.getRequestURI(), "");
 
-        UserDTO userDTO = userUseCases.createUser(user, baseUrl);
+        UserDTO userDTO = userUseCases.createUser(user);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")

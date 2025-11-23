@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,7 +51,7 @@ class UsersControllerTest {
         UserToCreateDTO userToCreateDTO = new UserToCreateDTO("testuser", "test@email.com", "password123");
         UserDTO expectedUserDTO = new UserDTO("testuser", "test@email.com", "password123");
 
-        when(userUseCases.createUser(any(User.class), eq("http://localhost:8080"))).thenReturn(expectedUserDTO);
+        when(userUseCases.createUser(any(User.class))).thenReturn(expectedUserDTO);
 
         ResponseEntity<UserDTO> response = usersController.createUser(userToCreateDTO);
 
@@ -65,7 +64,7 @@ class UsersControllerTest {
                         user.getEmail().equals("test@email.com") &&
                         user.getPassword().equals("password123") &&
                         !user.getEnabled()
-        ), eq("http://localhost:8080"));
+        ));
     }
 
     @Test

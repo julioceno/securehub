@@ -26,8 +26,8 @@ public class UserServiceImpl implements UserUseCases {
     }
 
     @Override
-    public UserDTO createUser(User user, String baseUrl) {
-        return createUserUseCase.run(user, baseUrl);
+    public UserDTO createUser(User user) {
+        return createUserUseCase.run(user);
     }
 
     @Override

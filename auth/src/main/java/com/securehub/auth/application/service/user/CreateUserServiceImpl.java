@@ -32,7 +32,7 @@ public class CreateUserServiceImpl implements CreateUserUseCases {
 
     @Override
     @Transactional
-    public UserDTO run(User user, String baseUrl) {
+    public UserDTO run(User user) {
         String correlationId = CorrelationId.get();
         log.info("UserServiceImpl.run - start - correlationId [{}] - email [{}]", correlationId, user.getEmail());
         validateUserDoesNotExist(correlationId, user.getEmail());
@@ -41,7 +41,7 @@ public class CreateUserServiceImpl implements CreateUserUseCases {
         user.setPassword(hashedPassword);
 
         User userCreated = userRepository.save(user);
-        createActivateUserCodeUseCase.run(userCreated, baseUrl);
+        createActivateUserCodeUseCase.run(userCreated);
 
         log.info("UserServiceImpl.run - end - correlationId [{}] - email [{}]", correlationId, user.getEmail());
         return userMapper.toDto(userCreated);

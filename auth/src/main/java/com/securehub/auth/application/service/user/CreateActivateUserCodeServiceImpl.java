@@ -37,7 +37,7 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
     }
 
     @Override
-    public void run(User user, String baseUrl) {
+    public void run(User user) {
         String correlationId = CorrelationId.get();
         log.info("CreateActivateUserCodeServiceImpl.run - start - correlationId [{}] - userId [{}]",
                 correlationId, user.getId());

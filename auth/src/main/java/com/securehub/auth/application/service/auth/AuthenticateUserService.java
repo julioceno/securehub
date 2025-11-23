@@ -54,7 +54,7 @@ public class AuthenticateUserService implements AuthenticateUserUseCase {
                 correlationId, user.getId(), user.getEmail(), user.getEnabled());
 
         if (!user.getEnabled()) {
-            shouldSendActivationCode(user, dto.baseUrl());
+            shouldSendActivationCode(user);
             log.error("AuthenticateUserService.run - userDisabled - correlationId [{}] - id [{}] - email [{}]", correlationId, user.getId(), user.getEmail());
             throw new UnauthorizedException("User is disabled");
         }
@@ -70,20 +70,20 @@ public class AuthenticateUserService implements AuthenticateUserUseCase {
     }
 
     // TODO: enhance method logic for call createActivateUserCodeUseCase in a single place
-    private void shouldSendActivationCode(User user, String baseUrl) {
+    private void shouldSendActivationCode(User user) {
         String correlationId = CorrelationId.get();
         log.debug("AuthenticateUserService.shouldSendActivationCode - start - correlationId [{}] - id [{}] - email [{}]", correlationId, user.getId(), user.getEmail());
 
         ActivationCode activationCode = activationCodeRepositoryPort.findByUserIdAndConfirmedAtIsNullAndDeletedAtIsNull(user.getId()).orElse(null);
         if (activationCode == null) {
             log.debug("AuthenticateUserService.shouldSendActivationCode - code not exists - correlationId [{}] - id [{}] - email [{}]", correlationId, user.getId(), user.getEmail());
-            createActivateUserCodeUseCase.run(user, baseUrl);
+            createActivateUserCodeUseCase.run(user);
             return;
         }
 
         if (activationCode.getExpiresAt().isBefore(Instant.now())) {
             log.debug("AuthenticateUserService.shouldSendActivationCode - is expired - correlationId [{}] - id [{}] - email [{}]", correlationId, user.getId(), user.getEmail());
-            createActivateUserCodeUseCase.run(user, baseUrl);
+            createActivateUserCodeUseCase.run(user);
             return;
         }
 
