@@ -1,5 +1,6 @@
 package com.securehub.auth.adapters.in.dto;
 
+import com.securehub.auth.domain.user.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -26,4 +27,12 @@ public class UserToCreateDTO {
     @Size(min = 6, max = 20, message = "{validation.size}")
     private String password;
 
+    public User toDomain() {
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(password);
+
+        return user;
+    }
 }

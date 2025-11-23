@@ -6,10 +6,10 @@ import com.securehub.auth.adapters.in.dto.ResetPasswordDTO;
 import com.securehub.auth.adapters.in.dto.UserToCreateDTO;
 import com.securehub.auth.domain.passwordResetToken.RequestPasswordResetTokenDTO;
 import com.securehub.auth.domain.user.User;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import com.securehub.auth.application.usecases.user.UserUseCases;
 import com.securehub.auth.domain.user.UserDTO;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -18,28 +18,15 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("v1/users")
+@AllArgsConstructor
 public class UsersController {
     private final UserUseCases userUseCases;
-    private final HttpServletRequest request;
-
-    public UsersController(UserUseCases userUseCases, HttpServletRequest request) {
-        this.userUseCases = userUseCases;
-        this.request = request;
-    }
 
     @PostMapping()
     public ResponseEntity<UserDTO> createUser(
            @RequestBody @Valid UserToCreateDTO body
     ) {
-        User user = new User(
-                null,
-                body.getUsername(),
-                body.getEmail(),
-                body.getPassword(),
-                false
-        );
-
-        UserDTO userDTO = userUseCases.createUser(user);
+        UserDTO userDTO = userUseCases.createUser(body.toDomain());
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")

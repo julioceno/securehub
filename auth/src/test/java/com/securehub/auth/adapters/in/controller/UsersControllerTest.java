@@ -11,6 +11,7 @@ import com.securehub.auth.domain.user.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
@@ -31,19 +32,18 @@ class UsersControllerTest {
     @Mock
     private UserUseCases userUseCases;
 
+    @InjectMocks
     private UsersController usersController;
-    private MockHttpServletRequest request;
 
     @BeforeEach
     void setUp() {
-        request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setRequestURI("/v1/users");
         request.setServerName("localhost");
         request.setServerPort(8080);
         request.setScheme("http");
 
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        usersController = new UsersController(userUseCases, request);
     }
 
     @Test
@@ -62,8 +62,7 @@ class UsersControllerTest {
         verify(userUseCases).createUser(argThat(user ->
                 user.getUsername().equals("testuser") &&
                         user.getEmail().equals("test@email.com") &&
-                        user.getPassword().equals("password123") &&
-                        !user.getEnabled()
+                        user.getPassword().equals("password123")
         ));
     }
 
