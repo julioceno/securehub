@@ -22,6 +22,12 @@ mail:
     email: noreply@securehub.com
     name: SecureHub
 
+kafka:
+  consumer:
+    bootstrap-servers: localhost:29092
+    group-id: mail-sender-group
+    auto-offset-reset: earliest
+
 logging:
   level:
     root: INFO
