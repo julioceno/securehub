@@ -59,8 +59,7 @@ class AuthControllerTest {
 
         verify(authenticateUserUseCase).run(argThat(authRequest ->
                 authRequest.email().equals("test@email.com") &&
-                        authRequest.password().equals("password123") &&
-                        authRequest.baseUrl().equals(baseUrl)
+                        authRequest.password().equals("password123")
         ));
 
         verify(httpResponse).addCookie(argThat(cookie ->

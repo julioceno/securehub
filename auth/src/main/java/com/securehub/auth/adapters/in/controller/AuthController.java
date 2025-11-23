@@ -28,7 +28,7 @@ public class AuthController {
                 .toString()
                 .replace(request.getRequestURI(), "");
 
-        AuthRequestDTO authRequest = new AuthRequestDTO(body.email(), body.password(), baseUrl);
+        AuthRequestDTO authRequest = new AuthRequestDTO(body.email(), body.password());
         AuthResponse authResponse = authenticateUserUseCase.run(authRequest);
 
         Cookie cookie = new Cookie("token", authResponse.token());
