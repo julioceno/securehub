@@ -41,7 +41,10 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordUseCase {
         if (user == null || !user.getEnabled()) return;
 
         invalidateOldTokenIfExists(user.getId());
-        String token = generateToken();
+
+        String rawCode = GenerateCode.generateCode();
+        String token = generateEncryptedCode(rawCode);
+
         Instant expiresAt = Instant.now().plus(15, ChronoUnit.MINUTES);
         PasswordResetToken passwordResetToken = new PasswordResetToken(
                 null,
@@ -69,20 +72,18 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordUseCase {
         });
 
         log.debug("ForgotPasswordServiceImpl.invalidateOldTokenIfExists - end - correlationId [{}]", correlationId);
-
     }
 
-    private String generateToken() {
+    private String generateEncryptedCode(String rawCode) {
         String correlationId = CorrelationId.get();
-        log.debug("ForgotPasswordServiceImpl.generateToken - start - correlationId [{}]", correlationId);
+        log.debug("ForgotPasswordServiceImpl.generateEncryptedCode - start - correlationId [{}]", correlationId);
         try {
-            String code = GenerateCode.generateCode();
-            String encryptedToken = signerPort.encrypt(code);
-            log.debug("ForgotPasswordServiceImpl.generateToken - end - correlationId [{}]", correlationId);
+            String encryptedToken = signerPort.encrypt(rawCode);
+            log.debug("ForgotPasswordServiceImpl.generateEncryptedCode - end - correlationId [{}]", correlationId);
             return encryptedToken;
         } catch(Exception ex) {
-            log.error("ForgotPasswordServiceImpl.generateToken - an error occurred while generating the token - correlationId [{}]", correlationId);
-            throw new BadRequestException("An error occurred while generating the token");
+            log.error("ForgotPasswordServiceImpl.generateEncryptedCode - an error occurred while encrypting the token - correlationId [{}]", correlationId);
+            throw new BadRequestException("An error occurred while encrypting the token");
         }
     }
 }

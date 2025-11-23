@@ -34,13 +34,12 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
         this.activationCodeRepositoryPort = activationCodeRepositoryPort;
         this.signerPort = signerPort;
         this.eventPublisherPort = eventPublisherPort;
-
     }
 
     @Override
     public void run(User user, String baseUrl) {
         String correlationId = CorrelationId.get();
-        log.debug("CreateActivateUserCodeServiceImpl.run - start - correlationId [{}] - userId [{}]",
+        log.info("CreateActivateUserCodeServiceImpl.run - start - correlationId [{}] - userId [{}]",
                 correlationId, user.getId());
 
         invalidateOldCodeIfExists(user.getId());
@@ -48,6 +47,8 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
         String rawCode = GenerateCode.generateCode();
         String code = generateEncryptedCode(rawCode);
         Instant expiresAt = Instant.now().plus(15, ChronoUnit.MINUTES);
+
+        log.debug("CreateActivateUserCodeServiceImpl.run - generate expires at - correlationId [{}] - expiresAt [{}]", correlationId, expiresAt);
 
         ActivationCode activationCode = new ActivationCode(
                 null,
@@ -61,7 +62,7 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
         activationCodeRepositoryPort.save(activationCode);
 
         sendMail(user, rawCode);
-        log.debug("CreateActivateUserCodeServiceImpl.run - end - correlationId [{}] - userId [{}] ",
+        log.info("CreateActivateUserCodeServiceImpl.run - end - correlationId [{}] - userId [{}] ",
                 correlationId, user.getId());
     }
 
@@ -80,13 +81,17 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
     }
 
     private String generateEncryptedCode(String rawCode) {
+        String correlationId = CorrelationId.get();
+        log.debug("CreateActivateUserCodeServiceImpl.generateEncryptedCode - start - correlationId [{}]", correlationId);
         try {
-            return signerPort.encrypt(rawCode);
+            String encryptedToken = signerPort.encrypt(rawCode);
+            log.debug("CreateActivateUserCodeServiceImpl.generateEncryptedCode - end - correlationId [{}]", correlationId);
+            return encryptedToken;
         } catch (Exception e) {
-            throw new BadRequestException("An error occurred while generating the code");
+            log.error("CreateActivateUserCodeServiceImpl.generateEncryptedCode - an error occurred while encrypting the token - correlationId [{}]", correlationId);
+            throw new BadRequestException("An error occurred while encrypting the code");
         }
     };
-
 
     private void sendMail(User user, String rawCode) {
         String correlationId = CorrelationId.get();
