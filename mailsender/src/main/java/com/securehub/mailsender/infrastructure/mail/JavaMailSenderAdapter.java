@@ -36,6 +36,7 @@ public class JavaMailSenderAdapter implements MailSenderPort {
             mailSender.send(msg);
             log.debug("JavaMailSenderAdapter.run - end - correlationId [{}] - email to [{}]", correlationId, to);
         } catch (Exception e) {
+            log.error("JavaMailSenderAdapter.run - error - email to [{}]", to, e);
             throw new RuntimeException(e);
         }
 
