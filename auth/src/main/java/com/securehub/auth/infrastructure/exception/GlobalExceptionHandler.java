@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
         String correlationId = CorrelationId.get();
         ErrorResponse body = new ErrorResponse(
                 LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.UNAUTHORIZED.value(),
                 "Unauthorized",
                 ex.getMessage(),
                 request.getRequestURI(),
