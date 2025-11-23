@@ -1,7 +1,7 @@
 package com.securehub.auth.adapters.in.filter;
 
+import com.securehub.auth.application.port.out.TokenProviderPort;
 import com.securehub.auth.application.util.CorrelationId;
-import com.securehub.auth.infrastructure.security.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -27,10 +27,10 @@ import org.springframework.lang.NonNull;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String tokenCookieName = "token";
     private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenProviderPort jwtTokenProvider;
     private final UserDetailsService userDetailsService;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService) {
+    public JwtAuthenticationFilter(TokenProviderPort jwtTokenProvider, UserDetailsService userDetailsService) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.userDetailsService = userDetailsService;
     }

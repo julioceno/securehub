@@ -4,14 +4,16 @@ import java.util.Map;
 
 public class EmailMessage {
     private String to;
+    private String subject;
     private String template;
     private Map<String, Object> params;
 
     public EmailMessage() {
     }
 
-    public EmailMessage(String to, String template, Map<String, Object> params) {
+    public EmailMessage(String to, String subject, String template, Map<String, Object> params) {
         this.to = to;
+        this.subject = subject;
         this.template = template;
         this.params = params;
     }
@@ -22,6 +24,14 @@ public class EmailMessage {
 
     public void setTo(String to) {
         this.to = to;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
     public String getTemplate() {

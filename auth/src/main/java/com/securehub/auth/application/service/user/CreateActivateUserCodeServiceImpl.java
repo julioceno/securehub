@@ -20,6 +20,7 @@ import java.util.Map;
 public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCodeUseCase {
     private static final Logger log = LoggerFactory.getLogger(CreateActivateUserCodeServiceImpl.class);
     private static final String templateName = "account-activation";
+    private static final String emailSubject = "Ative sua conta - Código de verificação";
 
     private final ActivationCodeRepositoryPort activationCodeRepositoryPort;
     private final SignerPort signerPort;
@@ -92,6 +93,7 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
         log.debug("CreateActivateUserCodeServiceImpl.sendMail - start - correlationId [{}]",  correlationId);
         EmailMessage emailMessage = new EmailMessage(
                 user.getEmail(),
+                emailSubject,
                 templateName,
                 Map.of(
                         "username", user.getUsername(),

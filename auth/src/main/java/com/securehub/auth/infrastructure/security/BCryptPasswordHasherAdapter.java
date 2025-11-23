@@ -6,7 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BCryptPasswordHasher implements PasswordHasher {
+public class BCryptPasswordHasherAdapter implements PasswordHasher {
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override

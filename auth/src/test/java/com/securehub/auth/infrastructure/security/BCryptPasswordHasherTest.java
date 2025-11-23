@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BCryptPasswordHasherTest {
 
-    private final PasswordHasher hasher = new BCryptPasswordHasher();
+    private final PasswordHasher hasher = new BCryptPasswordHasherAdapter();
 
     @Test
     void shouldHashAndMatchPassword() {

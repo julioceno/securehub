@@ -13,12 +13,12 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 
 @Component
-public class JwtTokenProvider implements TokenProviderPort {
+public class JwtTokenProviderAdapter implements TokenProviderPort {
     private final String secretKey;
     private final long expirationInSeconds;
     private final String issuer;
 
-    public JwtTokenProvider(
+    public JwtTokenProviderAdapter(
             @Value("${api.jwt.secret}") String secretKey,
             @Value("${api.jwt.expirationInSeconds}") long expirationInSeconds,
             @Value("${api.jwt.issuer}") String issuer
