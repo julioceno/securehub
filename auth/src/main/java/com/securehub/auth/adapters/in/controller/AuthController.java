@@ -8,23 +8,19 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/v1/auth")
+@AllArgsConstructor
 public class AuthController {
     private final AuthenticateUserUseCase authenticateUserUseCase;
     private final HttpServletRequest request;
     private final HttpServletResponse httpResponse;
 
-    public AuthController(AuthenticateUserUseCase authenticateUserUseCase, HttpServletRequest request, HttpServletResponse httpResponse) {
-        this.authenticateUserUseCase = authenticateUserUseCase;
-        this.request = request;
-        this.httpResponse = httpResponse;
-    }
-
-    @PostMapping()
+    @PostMapping
     public ResponseEntity createUser(
             @Valid @RequestBody SignInDTO body
     ) {
