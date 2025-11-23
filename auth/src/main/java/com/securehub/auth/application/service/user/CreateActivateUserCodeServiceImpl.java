@@ -10,6 +10,7 @@ import com.securehub.auth.domain.activationCode.ActivationCode;
 import com.securehub.auth.domain.activationCode.ActivationCodeRepositoryPort;
 import com.securehub.auth.domain.email.EmailMessage;
 import com.securehub.auth.domain.user.User;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,7 @@ public class CreateActivateUserCodeServiceImpl implements CreateActivateUserCode
     }
 
     @Override
+    @Transactional
     public void run(User user) {
         String correlationId = CorrelationId.get();
         log.info("CreateActivateUserCodeServiceImpl.run - start - correlationId [{}] - userId [{}]",

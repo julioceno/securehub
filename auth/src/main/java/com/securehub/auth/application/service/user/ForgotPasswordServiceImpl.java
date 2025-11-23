@@ -11,6 +11,7 @@ import com.securehub.auth.domain.passwordResetToken.PasswordResetToken;
 import com.securehub.auth.domain.passwordResetToken.PasswordResetTokenRepositoryPort;
 import com.securehub.auth.domain.user.User;
 import com.securehub.auth.domain.user.UserRepositoryPort;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +42,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordUseCase {
     }
 
     @Override
+    @Transactional
     public void run(String email) {
         String correlationId = CorrelationId.get();
         log.info("ForgotPasswordServiceImpl.run - start - correlationId [{}] - email [{}]", correlationId, email);
