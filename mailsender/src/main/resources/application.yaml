@@ -27,6 +27,9 @@ kafka:
     bootstrap-servers: localhost:29092
     group-id: mail-sender-group
     auto-offset-reset: earliest
+    email:
+      topic: email-topic
+      concurrency: 3
 
 logging:
   level:

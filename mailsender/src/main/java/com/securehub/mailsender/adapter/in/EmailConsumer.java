@@ -17,11 +17,10 @@ public class EmailConsumer {
     private final ObjectMapper objectMapper;
     private final SendMailUseCase sendMailUseCase;
 
-    // TODO: get configuration from application.yaml
     @KafkaListener(
-            topics = "email-topic",
-            groupId = "mail-sender-group",
-            concurrency = "3"
+            topics = "${kafka.consumer.email.topic}",
+            groupId = "${kafka.consumer.group-id}",
+            concurrency = "${kafka.consumer.email.concurrency}"
     )
     public void listen(
             @Payload String emailMessage,
