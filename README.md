@@ -1,5 +1,18 @@
 # SecureHub
 
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![Spring Security](https://img.shields.io/badge/Spring%20Security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%23336791.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-231F20?style=for-the-badge&logo=apache-kafka&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Docker Compose](https://img.shields.io/badge/docker%20compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Apache Maven](https://img.shields.io/badge/Apache%20Maven-C71A36?style=for-the-badge&logo=Apache%20Maven&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white)
+![Thymeleaf](https://img.shields.io/badge/Thymeleaf-%23005C0F.svg?style=for-the-badge&logo=Thymeleaf&logoColor=white)
+[![Licence](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](./LICENSE)
+
 SecureHub é um sistema de gerenciamento de usuários e autenticação distribuído, construído com arquitetura de microserviços usando Spring Boot, Kafka e PostgreSQL. O projeto implementa funcionalidades completas de autenticação, autorização, gestão de usuários e envio de emails.
 
 ## Resumo do Projeto
@@ -137,28 +150,6 @@ cd mailsender
 curl http://localhost:8080/v1/ping
 
 # Os logs devem mostrar as aplicações iniciadas
-```
-
-## Como Testar
-
-### Testes Unitários
-```bash
-# Auth Service
-cd auth
-./mvnw test
-
-# Mail Sender Service  
-cd mailsender
-./mvnw test
-```
-
-### Testes de Integração
-```bash
-# Executar todos os testes
-./mvnw verify
-
-# Gerar relatório de cobertura
-./mvnw jacoco:report
 ```
 
 ### Testes Manuais via API
