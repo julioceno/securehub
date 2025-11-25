@@ -24,7 +24,7 @@ mail:
 
 kafka:
   consumer:
-    bootstrap-servers: localhost:29092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:29092}
     group-id: mail-sender-group
     auto-offset-reset: earliest
     email:
