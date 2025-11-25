@@ -269,7 +269,6 @@ securehub/
 | POST | `/v1/users/password/forgot` | Esqueci senha |
 | POST | `/v1/users/password/reset` | Reset senha |
 | POST | `/v1/auth` | Login |
-| GET | `/v1/auth/me` | Perfil usuário |
 
 ### Configurações
 
