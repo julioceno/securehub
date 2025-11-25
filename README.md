@@ -109,7 +109,7 @@ O sistema utiliza comunicação assíncrona entre serviços através do Apache K
 
 ### 1. Clonar o Repositório
 ```bash
-git clone <repository-url>
+git clone git@github.com:julioceno/securehub.git
 cd securehub
 ```
 
